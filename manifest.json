@@ -1,0 +1,10 @@
+{
+    "id": "obsidian-flash-quizz",
+    "name": "Flash&Quizz",
+    "version": "1.0.0",
+    "minAppVersion": "1.0.0",
+    "description": "Learning through interactive Flashcards and Quizzes via JSON files or integrated json in the .md files.",
+    "author": "Infinition",
+    "authorUrl": "https://github.com/infinition/obsidian-flash-quizz",
+    "isDesktopOnly": false
+}

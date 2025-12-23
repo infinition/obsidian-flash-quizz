@@ -1,0 +1,259 @@
+/* Launcher */
+.fc-launcher-container {
+    padding: 20px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 12px;
+    background: var(--background-secondary-alt);
+    text-align: center;
+    margin: 15px 0;
+}
+
+.fc-last-score-badge {
+    color: var(--color-accent);
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+/* Modal Fullscreen & Backdrop */
+.modal-bg {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(8px);
+}
+
+.fc-modal-full {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+    overflow: hidden;
+}
+
+/* Header & Progress Bar */
+.fc-header-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fc-score-row {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 8px;
+}
+
+.fc-prev-score {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.fc-progress-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.fc-progress-bg {
+    width: 100%;
+    height: 8px;
+    background: var(--background-modifier-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.fc-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--interactive-accent);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 8px var(--interactive-accent);
+}
+
+.fc-progress-label {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: var(--text-normal);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Game Area */
+.fc-game-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    position: relative;
+    width: 100%;
+}
+
+.fc-question-text {
+    text-align: center;
+    max-width: 600px;
+    font-size: 1.5em;
+    margin: 0;
+}
+
+/* Options */
+.fc-options-list {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fc-option-btn {
+    width: 100%;
+    padding: 15px;
+    text-align: left;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 10px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.fc-option-btn.is-selected {
+    border-color: var(--interactive-accent);
+    background: var(--background-secondary);
+    box-shadow: 0 0 0 2px var(--interactive-accent);
+}
+
+.fc-option-btn.is-correct {
+    background-color: #2ecc71 !important;
+    color: white !important;
+    border-color: #27ae60;
+}
+
+.fc-option-btn.is-wrong {
+    background-color: #e74c3c !important;
+    color: white !important;
+    border-color: #c0392b;
+}
+
+.fc-btn-validate {
+    margin-top: 20px;
+    padding: 12px 40px;
+    font-size: 1.1em;
+}
+
+/* Flashcard Specific */
+.fc-card-container {
+    perspective: 1000px;
+    width: 100%;
+    height: 45vh;
+    max-width: 500px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+}
+
+.fc-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.fc-card-container.is-flipped .fc-card-inner {
+    transform: rotateY(180deg);
+}
+
+.fc-card-front,
+.fc-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px solid var(--interactive-accent);
+    background: var(--background-primary);
+    box-shadow: var(--shadow-l);
+    font-size: 1.4em;
+    user-select: none;
+}
+
+.fc-card-back {
+    transform: rotateY(180deg);
+    border-color: var(--color-green);
+}
+
+/* Swipe Animations */
+.fc-card-container.swipe-right {
+    transform: translateX(150%) rotate(30deg) !important;
+    opacity: 0;
+}
+
+.fc-card-container.swipe-left {
+    transform: translateX(-150%) rotate(-30deg) !important;
+    opacity: 0;
+}
+
+.fc-card-container.swipe-up {
+    transform: translateY(-150%) !important;
+    opacity: 0;
+}
+
+.fc-card-container.swipe-down {
+    transform: translateY(150%) !important;
+    opacity: 0;
+}
+
+.fc-game-container.slide-next {
+    animation: slideNext 0.4s ease-out;
+}
+
+@keyframes slideNext {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.fc-score-group {
+    display: flex;
+    gap: 20px;
+}
+
+.fc-score-group.is-hidden {
+    visibility: hidden;
+}
+
+.fc-btn-wrong {
+    background-color: var(--color-red) !important;
+    color: white !important;
+}
+
+.fc-btn-right {
+    background-color: var(--color-green) !important;
+    color: white !important;
+}
+
+.fc-final-score {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--color-accent);
+}

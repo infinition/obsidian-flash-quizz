@@ -1,2 +1,156 @@
-# obsidian-flash-quizz
-**Flash&amp;Quizz** is a powerful and aesthetic Obsidian plugin that transforms your JSON data into interactive learning tools. Whether you're using inline JSON or external files, you can study with beautiful **3D Flashcards** or test your knowledge with automated **Quizzes**.
+# Flash&Quizz 🧠
+
+**Flash&Quizz** is a powerful and aesthetic Obsidian plugin that transforms your JSON data into interactive learning tools. Whether you're using inline JSON or external files, you can study with beautiful **3D Flashcards** or test your knowledge with automated **Quizzes**.
+
+---
+
+## ✨ Features
+
+*   **Dual Learning Modes**:
+    *   **3D Flashcards**: Immersive front/back cards with smooth 3D flip animations and self-assessment.
+    *   **Interactive Quizzes**: Multiple-choice questions (MCQ) with automated scoring and instant feedback.
+*   **Premium UI/UX**:
+    *   **Modern Design**: Sleek interface with glassmorphism, vibrant colors, and smooth transitions.
+    *   **Gestures Support**: Swipe left/right to grade flashcards or navigate through questions.
+    *   **Progress Tracking**: Visual progress bars and score badges to monitor your learning journey.
+*   **Data Flexibility**:
+    *   **Inline JSON**: Define your decks directly inside your markdown notes.
+    *   **External Files**: Reference `.json` files stored anywhere in your vault.
+*   **Multilingual**: Full support for **English**, **French**, **German**, **Spanish**, **Chinese**, **Japanese**, and **Portuguese**, configurable in the settings.
+*   **Smart Shuffling**: Questions and options are randomized every session to ensure true mastery.
+
+---
+
+## 🚀 How to Use
+### 🖱️Context Menu (Fast Insert)
+To quickly add cards or quizzes, right-click in the editor and use the Insert Quiz/Flashcard sub-menu to choose between inline templates or JSON file references.
+
+### 1. Flashcards Mode (`flashcard`)
+
+Perfect for active recall. Each card requires a `question` and an `answer`.
+
+**Inline Data Example:**
+
+````markdown
+```flashcard
+[
+  { "question": "What is the powerhouse of the cell?", "answer": "Mitochondria" },
+  { "question": "Who developed the theory of relativity?", "answer": "Albert Einstein" }
+]
+```
+````
+
+**External File Example:**
+
+````markdown
+```flashcard
+{ "file": "Resources/Science_Deck.json" }
+```
+````
+
+### 2. Quizz Mode (`quizz`)
+
+Ideal for testing specific knowledge. Each question includes an array of `options`, each with a `text` and a `correct` boolean.
+
+**Example:**
+
+````markdown
+```quizz
+[
+  {
+    "question": "Which planets are gas giants?",
+    "options": [
+      { "text": "Jupiter", "correct": true },
+      { "text": "Mars", "correct": false },
+      { "text": "Saturn", "correct": true },
+      { "text": "Venus", "correct": false }
+    ]
+  }
+]
+```
+````
+
+**External File Example:**
+
+````markdown
+```quizz
+{ "file": "Resources/Science_Deck.json" }
+```
+````
+
+---
+
+## 🎮 Gestures & Interaction
+
+The plugin is optimized for both desktop and mobile (touch) use.
+
+### 🗂️ Flashcards Mode
+*   **Tap**: Flip the card to reveal the answer.
+*   **Swipe Right**: Mark as **Correct**.
+*   **Swipe Left**: Mark as **Incorrect**.
+*   **Swipe Up**: Go to the **Next** card.
+*   **Swipe Down**: Go to the **Previous** card.
+
+### 📝 Quizz Mode
+*   **Tap Options**: Select one or multiple answers.
+*   **Swipe Left/Right**: **Validate** your selection or go to the **Next** question (marked as failed if incorrect).
+
+---
+
+## 🎲 Randomization
+To ensure effective learning, **Flash&Quizz** automatically shuffles your decks:
+*   **Flashcards**: The order of cards is randomized every time you start.
+*   **Quizzes**: Both the order of questions and the order of options within each question are randomized.
+
+---
+
+## ⚙️ Settings
+
+You can customize the plugin behavior in the **Flash&Quizz** settings tab:
+*   **Language**: Choose between English, Français, Deutsch, Español, 中文, 日本語, and Português.
+*   **Score History**: View and manage your last scores for each deck.
+
+---
+
+## 🛠️ Installation & Development
+
+### For Users
+1.  **Create Plugin Folder**: Go to your vault's `.obsidian/plugins/` directory and create a folder named `obsidian-flash-quizz`.
+2.  **Add Files**: Place `main.js`, `manifest.json`, and `styles.css` inside that folder.
+3.  **Enable**: Open Obsidian, go to **Settings > Community Plugins**, and toggle on **Flash&Quizz**.
+
+### For Developers
+If you want to modify the plugin, you'll need the following source files:
+*   `main.ts`: The main plugin logic.
+*   `i18n.ts`: The localization and translation system.
+*   `styles.css`: The UI styling and animations.
+*   `manifest.json`: Plugin metadata.
+*   `package.json` & `tsconfig.json`: Build configurations.
+
+You can rebuild the plugin using the following command:
+
+```bash
+npx esbuild main.ts --bundle --external:obsidian --outfile=main.js --format=cjs
+```
+
+Alternatively, if you have the full environment set up:
+```bash
+npm install
+npm run build
+```
+
+---
+
+## 📝 Technical Details
+
+*   **Plugin ID**: `obsidian-flash-quizz`
+*   **Author**: Infinition
+*   **Storage**: Scores are persisted in `data.json` under the `lastScores` record.
+*   **Localization**: Powered by `i18n.ts` (supports 7 languages)..
+*   **Code Processors**: Registers `flashcard` and `quizz` as markdown code block processors.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
