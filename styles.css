@@ -102,6 +102,9 @@
     max-width: 600px;
     font-size: 1.5em;
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 /* Options */
@@ -122,6 +125,10 @@
     border-radius: 10px;
     transition: all 0.2s;
     cursor: pointer;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    min-height: fit-content;
 }
 
 .fc-option-btn.is-selected {
