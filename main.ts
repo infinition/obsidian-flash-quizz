@@ -1,4 +1,4 @@
-import { App, Modal, Plugin, TFile, setIcon, MarkdownRenderChild, MarkdownPostProcessorContext, PluginSettingTab, Setting } from 'obsidian';
+import { App, Modal, Plugin, TFile, TFolder, setIcon, MarkdownRenderChild, MarkdownPostProcessorContext, PluginSettingTab, Setting, Editor, Menu, Notice } from 'obsidian';
 import { t, Language } from './i18n';
 
 // --- INTERFACES ---
@@ -54,6 +54,109 @@ export default class JsonFlashcardPlugin extends Plugin {
         this.registerMarkdownCodeBlockProcessor("quizz", async (source, el, ctx) => {
             this.renderLauncher(source, el, ctx, "quizz");
         });
+
+        // --- AJOUT DU SOUS-MENU CONTEXTUEL ---
+        this.registerEvent(
+            this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor) => {
+                menu.addItem((mainItem) => {
+                    mainItem
+                        .setTitle(t("menu_insert", this.settings.language))
+                        .setIcon("zap")
+                        .setSection("insert");
+
+                    const subMenu = mainItem.setSubmenu();
+
+                    subMenu.addItem((item) => {
+                        item
+                            .setTitle(t("menu_quiz", this.settings.language))
+                            .setIcon("list-checks")
+                            .onClick(() => {
+                                const template = "```quizz\n[\n  {\n    \"question\": \"\",\n    \"options\": [\n      { \"text\": \"\", \"correct\": true },\n      { \"text\": \"\", \"correct\": false }\n    ]\n  }\n]\n```";
+                                editor.replaceSelection(template);
+                            });
+                    });
+
+                    subMenu.addItem((item) => {
+                        item
+                            .setTitle(t("menu_quiz_json", this.settings.language))
+                            .setIcon("file-json")
+                            .onClick(() => {
+                                const template = "```quizz\n{\n  \"file\": \"path/to/your/file.json\"\n}\n```";
+                                editor.replaceSelection(template);
+                            });
+                    });
+
+                    subMenu.addItem((item) => {
+                        item
+                            .setTitle(t("menu_flashcard", this.settings.language))
+                            .setIcon("layers")
+                            .onClick(() => {
+                                const template = "```flashcard\n[\n  {\n    \"question\": \"\",\n    \"answer\": \"\"\n  }\n]\n```";
+                                editor.replaceSelection(template);
+                            });
+                    });
+
+                    subMenu.addItem((item) => {
+                        item
+                            .setTitle(t("menu_flashcard_json", this.settings.language))
+                            .setIcon("file-json")
+                            .onClick(() => {
+                                const template = "```flashcard\n{\n  \"file\": \"path/to/your/file.json\"\n}\n```";
+                                editor.replaceSelection(template);
+                            });
+                    });
+                });
+            })
+        );
+
+        // --- AJOUT DE L'ICÔNE DANS LA BARRE LATERALE ---
+        this.addRibbonIcon("layers", t("ribbon_all_flashcards", this.settings.language), () => {
+            new FolderSelectionModal(this.app, this).open();
+        });
+    }
+
+    async launchAllFlashcards(folderPaths?: string[]) {
+        const flashcards: Flashcard[] = [];
+        const files = this.app.vault.getMarkdownFiles();
+
+        for (const file of files) {
+            if (folderPaths && folderPaths.length > 0) {
+                const isInSelectedFolder = folderPaths.some(path => file.path.startsWith(path));
+                if (!isInSelectedFolder) continue;
+            }
+
+            const content = await this.app.vault.read(file);
+            const regex = /```flashcard\n([\s\S]*?)\n```/g;
+            let match;
+
+            while ((match = regex.exec(content)) !== null) {
+                try {
+                    const source = match[1];
+                    const data = JSON.parse(source);
+                    let items: Flashcard[] = [];
+
+                    if (data.file) {
+                        const jsonFile = this.app.vault.getAbstractFileByPath(data.file);
+                        if (jsonFile instanceof TFile) {
+                            items = JSON.parse(await this.app.vault.read(jsonFile));
+                        }
+                    } else {
+                        items = Array.isArray(data) ? data : (data.items || []);
+                    }
+
+                    flashcards.push(...items);
+                } catch (e) {
+                    console.error(`Error parsing flashcards in ${file.path}:`, e);
+                }
+            }
+        }
+
+        if (flashcards.length > 0) {
+            const deckId = folderPaths && folderPaths.length > 0 ? `all-flashcards:${folderPaths.sort().join(",")}` : "all-flashcards";
+            new FlashcardModal(this.app, flashcards, deckId, this).open();
+        } else {
+            new Notice(t("none", this.settings.language));
+        }
     }
 
     async renderLauncher(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext, type: "flashcard" | "quizz") {
@@ -71,7 +174,7 @@ export default class JsonFlashcardPlugin extends Plugin {
             }
 
             const deckId = data.id || data.file || `${ctx.sourcePath}#${hashCode(source)}`;
-            const child = new LauncherChild(el, this, deckId, type, items);
+            const child = new LauncherChild(el, this, deckId, type, items, data.img, ctx);
             ctx.addChild(child);
 
         } catch (e) {
@@ -100,7 +203,9 @@ class LauncherChild extends MarkdownRenderChild {
         public plugin: JsonFlashcardPlugin,
         public deckId: string,
         public type: "flashcard" | "quizz",
-        public items: any[]
+        public items: any[],
+        public imgUrl?: string,
+        public ctx?: MarkdownPostProcessorContext
     ) {
         super(containerEl);
     }
@@ -127,6 +232,12 @@ class LauncherChild extends MarkdownRenderChild {
         this.containerEl.empty();
         const container = this.containerEl.createDiv({ cls: "fc-launcher-container" });
 
+        if (this.imgUrl) {
+            container.addClass("has-image");
+            const finalUrl = this.resolveImageUrl(this.imgUrl);
+            container.style.backgroundImage = `url("${finalUrl}")`;
+        }
+
         this.badgeEl = container.createDiv({ cls: "fc-last-score-badge" });
         this.refresh();
 
@@ -140,6 +251,105 @@ class LauncherChild extends MarkdownRenderChild {
             if (this.type === "flashcard") new FlashcardModal(this.plugin.app, this.items, this.deckId, this.plugin).open();
             else new QuizModal(this.plugin.app, this.items, this.deckId, this.plugin).open();
         };
+
+        // Drag & Drop
+        container.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            container.addClass("is-dragging");
+        });
+
+        container.addEventListener("dragleave", () => {
+            container.removeClass("is-dragging");
+        });
+
+        container.addEventListener("drop", async (e) => {
+            e.preventDefault();
+            container.removeClass("is-dragging");
+
+            let newImgUrl = "";
+            const text = e.dataTransfer?.getData("text/plain");
+
+            if (text) {
+                if (text.startsWith("obsidian://")) {
+                    newImgUrl = text;
+                } else {
+                    const match = text.match(/\[\[(.*?)\]\]/) || [null, text];
+                    newImgUrl = match[1].split("|")[0].trim();
+                }
+            }
+
+            if (newImgUrl) {
+                this.imgUrl = newImgUrl;
+                this.render();
+                await this.updateSource(newImgUrl);
+            }
+        });
+    }
+
+    resolveImageUrl(url: string): string {
+        if (url.startsWith("http")) return url;
+
+        let path = url;
+        if (url.startsWith("obsidian://")) {
+            try {
+                // Extract file path from obsidian://open?vault=...&file=...
+                const match = url.match(/[?&]file=([^&]+)/);
+                if (match) path = decodeURIComponent(match[1]);
+            } catch (e) {
+                console.error("Failed to parse obsidian URL:", e);
+            }
+        }
+
+        // Clean up [[ ]] if present
+        path = path.replace(/^\[\[/, "").replace(/\]\]$/, "").split("|")[0].trim();
+
+        // Try to find the file via linkpath
+        const file = this.plugin.app.metadataCache.getFirstLinkpathDest(path, "");
+        if (file instanceof TFile) {
+            return this.plugin.app.vault.adapter.getResourcePath(file.path);
+        }
+
+        // Try as raw path
+        const abstractFile = this.plugin.app.vault.getAbstractFileByPath(path);
+        if (abstractFile instanceof TFile) {
+            return this.plugin.app.vault.adapter.getResourcePath(abstractFile.path);
+        }
+
+        return url;
+    }
+
+    async updateSource(newImgUrl: string) {
+        if (!this.ctx) return;
+        const file = this.plugin.app.vault.getAbstractFileByPath(this.ctx.sourcePath);
+        if (!(file instanceof TFile)) return;
+
+        const section = this.ctx.getSectionInfo(this.containerEl);
+        if (!section) return;
+
+        const content = await this.plugin.app.vault.read(file);
+        const lines = content.split("\n");
+
+        const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
+        const blockSource = blockLines.join("\n");
+
+        try {
+            let data = JSON.parse(blockSource);
+            if (Array.isArray(data)) {
+                data = {
+                    img: newImgUrl,
+                    items: data
+                };
+            } else {
+                data.img = newImgUrl;
+            }
+            const newBlockSource = JSON.stringify(data, null, 2);
+
+            lines.splice(section.lineStart + 1, section.lineEnd - section.lineStart - 1, newBlockSource);
+            await this.plugin.app.vault.modify(file, lines.join("\n"));
+            new Notice("Banner updated!");
+        } catch (e) {
+            console.error("Failed to update image in source:", e);
+        }
     }
 
     refresh() {
@@ -160,8 +370,8 @@ abstract class BaseModal extends Modal {
     currentIndex: number = 0;
     correctCount: number = 0;
     viewedCount: number = 0;
+    previousScore: string;
 
-    // UI Progress
     progressFillEl: HTMLElement;
     progressTextEl: HTMLElement;
 
@@ -171,18 +381,17 @@ abstract class BaseModal extends Modal {
 
     constructor(app: App, public deckId: string, public plugin: JsonFlashcardPlugin) {
         super(app);
+        this.previousScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
     }
 
     onOpen() {
         this.contentEl.empty();
         this.contentEl.addClass("fc-modal-full");
 
-        // Header avec Barre de Progression
         const header = this.contentEl.createDiv({ cls: "fc-header-container" });
 
         const scoreRow = header.createDiv({ cls: "fc-score-row" });
-        const lastScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
-        scoreRow.createEl("span", { text: `${t("prev_score", this.plugin.settings.language)}${lastScore}`, cls: "fc-prev-score" });
+        scoreRow.createEl("span", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score" });
 
         const progressWrapper = header.createDiv({ cls: "fc-progress-wrapper" });
         const progressBg = progressWrapper.createDiv({ cls: "fc-progress-bg" });
@@ -232,6 +441,7 @@ abstract class BaseModal extends Modal {
     onClose() {
         this.plugin.saveSettings();
         this.plugin.refreshLaunchers(this.deckId);
+        new Notice(`${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount} (${t("prev_score", this.plugin.settings.language)}${this.previousScore})`);
     }
 }
 
@@ -327,7 +537,10 @@ class QuizModal extends BaseModal {
     showFinalScore() {
         this.gameContainer.empty();
         this.gameContainer.createEl("h2", { text: t("completed", this.plugin.settings.language) });
-        this.gameContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
+
+        const scoreContainer = this.gameContainer.createDiv({ cls: "fc-final-score-container" });
+        scoreContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
+        scoreContainer.createEl("div", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score-final" });
     }
 }
 
@@ -410,7 +623,7 @@ class FlashcardModal extends BaseModal {
                 this.currentIndex++;
                 this.display();
             } else {
-                this.close();
+                this.showFinalScore();
             }
         }, 400);
     }
@@ -424,6 +637,60 @@ class FlashcardModal extends BaseModal {
             this.currentIndex = nextIndex;
             this.display();
         }, 400);
+    }
+
+    showFinalScore() {
+        this.cardContainer.addClass("is-hidden");
+        this.scoreGroup.addClass("is-hidden");
+
+        const finalContainer = this.cardContainer.parentElement?.createDiv({ cls: "fc-final-score-container" });
+        if (finalContainer) {
+            finalContainer.createEl("h2", { text: t("completed", this.plugin.settings.language) });
+            finalContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
+            finalContainer.createEl("div", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score-final" });
+        }
+    }
+}
+
+// --- MODALE DE SELECTION DE DOSSIER ---
+
+class FolderSelectionModal extends Modal {
+    constructor(app: App, public plugin: JsonFlashcardPlugin) {
+        super(app);
+    }
+
+    onOpen() {
+        const { contentEl } = this;
+        contentEl.empty();
+        contentEl.createEl("h2", { text: t("select_folder_title", this.plugin.settings.language) });
+
+        const container = contentEl.createDiv({ cls: "fc-folder-selection-container" });
+
+        const allVaultBtn = container.createEl("button", {
+            text: t("all_vault", this.plugin.settings.language),
+            cls: "mod-cta fc-folder-btn"
+        });
+        allVaultBtn.onclick = () => {
+            this.plugin.launchAllFlashcards();
+            this.close();
+        };
+
+        container.createEl("hr");
+        container.createEl("h3", { text: t("select_folders", this.plugin.settings.language) });
+
+        const folderList = container.createDiv({ cls: "fc-folder-list" });
+        const rootFolders = this.app.vault.getRoot().children.filter(f => f instanceof TFolder) as TFolder[];
+
+        rootFolders.forEach(folder => {
+            const folderBtn = folderList.createEl("button", {
+                text: folder.name,
+                cls: "fc-folder-item-btn"
+            });
+            folderBtn.onclick = () => {
+                this.plugin.launchAllFlashcards([folder.path]);
+                this.close();
+            };
+        });
     }
 }
 
@@ -445,11 +712,16 @@ class JsonFlashcardSettingTab extends PluginSettingTab {
             .addDropdown(dropdown => dropdown
                 .addOption('en', 'English')
                 .addOption('fr', 'Français')
+                .addOption('de', 'Deutsch')
+                .addOption('es', 'Español')
+                .addOption('zh', '简体中文')
+                .addOption('ja', '日本語')
+                .addOption('pt', 'Português')
                 .setValue(this.plugin.settings.language)
                 .onChange(async (value: Language) => {
                     this.plugin.settings.language = value;
                     await this.plugin.saveSettings();
-                    this.display(); // Refresh tab to update labels
+                    this.display();
                 })
             );
     }

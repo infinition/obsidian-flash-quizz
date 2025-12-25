@@ -6,6 +6,43 @@
     background: var(--background-secondary-alt);
     text-align: center;
     margin: 15px 0;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.fc-launcher-container.has-image {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.fc-launcher-container.has-image::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 0;
+}
+
+.fc-launcher-container.has-image>* {
+    position: relative;
+    z-index: 1;
+}
+
+.fc-launcher-container.is-dragging {
+    border: 2px dashed var(--interactive-accent);
+    background-color: var(--background-modifier-hover);
+    transform: scale(1.02);
 }
 
 .fc-last-score-badge {
@@ -13,6 +50,10 @@
     font-weight: bold;
     font-size: 0.9em;
     margin-bottom: 10px;
+}
+
+.fc-launcher-container.has-image .fc-last-score-badge {
+    color: #fff;
 }
 
 /* Modal Fullscreen & Backdrop */
@@ -252,8 +293,63 @@
     color: white !important;
 }
 
+/* Final Score */
+.fc-final-score-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeIn 0.5s ease-out;
+}
+
 .fc-final-score {
-    font-size: 1.5em;
+    font-size: 2em;
     font-weight: bold;
-    color: var(--color-accent);
+    color: var(--interactive-accent);
+}
+
+.fc-prev-score-final {
+    font-size: 1em;
+    color: var(--text-muted);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Folder Selection */
+.fc-folder-selection-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.fc-folder-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.fc-folder-btn {
+    width: 100%;
+    padding: 12px;
+}
+
+.fc-folder-item-btn {
+    padding: 10px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

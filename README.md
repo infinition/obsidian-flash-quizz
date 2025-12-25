@@ -9,19 +9,27 @@
 *   **Dual Learning Modes**:
     *   **3D Flashcards**: Immersive front/back cards with smooth 3D flip animations and self-assessment.
     *   **Interactive Quizzes**: Multiple-choice questions (MCQ) with automated scoring and instant feedback.
+    *   **Global Session**: Launch a combined session containing all flashcards from your entire vault with a single click from the sidebar.
 *   **Premium UI/UX**:
     *   **Modern Design**: Sleek interface with glassmorphism, vibrant colors, and smooth transitions.
     *   **Gestures Support**: Swipe left/right to grade flashcards or navigate through questions.
-    *   **Progress Tracking**: Visual progress bars and score badges to monitor your learning journey.
+    *   **Progress Tracking**: Visual progress bars, score badges, and **end-of-session score comparison** to monitor your learning journey.
+*   **Session Summary**: View your current performance compared to your previous score upon completion or early exit.
 *   **Data Flexibility**:
     *   **Inline JSON**: Define your decks directly inside your markdown notes.
     *   **External Files**: Reference `.json` files stored anywhere in your vault.
-*   **Multilingual**: Full support for **English** and **French**, configurable in the settings.
+*   **Banner Image Support**:
+    *   **Custom Banners**: Add beautiful background images to your launchers using the `img` property.
+    *   **Drag & Drop**: Simply drag an image file or an `obsidian://` link onto a launcher to update its banner instantly.
+    *   **Smart Resolution**: Supports web URLs, internal Obsidian links (`[[image.png]]`), and `obsidian://` URIs.
+*   **Multilingual**: Full support for **English**, **French**, **German**, **Spanish**, **Chinese**, **Japanese**, and **Portuguese**, configurable in the settings.
 *   **Smart Shuffling**: Questions and options are randomized every session to ensure true mastery.
 
 ---
 
 ## 🚀 How to Use
+### 🖱️Context Menu (Fast Insert)
+To quickly add cards or quizzes, right-click in the editor and use the Insert Quiz/Flashcard sub-menu to choose between inline templates or JSON file references.
 
 ### 1. Flashcards Mode (`flashcard`)
 
@@ -76,6 +84,39 @@ Ideal for testing specific knowledge. Each question includes an array of `option
 ```
 ````
 
+### 3. Global Session (Ribbon Icon)
+
+For a comprehensive review, you can launch a session that aggregates **all flashcards** from every `flashcard` code block in your vault.
+
+*   **How to launch**: Click the **Layers icon** (`layers`) in the Obsidian left ribbon (sidebar).
+*   **Folder Selection**: Upon clicking, a modal will appear allowing you to choose between:
+    *   **All Vault**: Scans every markdown file in your vault.
+    *   **Specific Folder**: Scans only the markdown files within a selected root folder.
+*   **Smart Score Saving**: Scores for global sessions are saved independently based on your selection. For example, a session for your "Biology" folder will have its own "Last Score" separate from an "All Vault" session.
+
+### 4. Session Completion & Scoring
+
+At the end of every session (whether you finish all cards or exit early), **Flash&Quizz** provides a detailed summary:
+*   **Final Score Screen**: For both Flashcards and Quizzes, a dedicated screen displays your final score (e.g., `8/10`).
+*   **Score Comparison**: Your current score is displayed alongside your **previous score** for that specific deck or folder context, allowing you to track your improvement instantly.
+*   **Summary Notice**: Upon closing the session modal, a quick notification appears in the corner of Obsidian with your session summary.
+
+### 🖼️ 5. Banner Images & Drag-and-Drop
+You can personalize each launcher with a background image to make your notes even more aesthetic.
+
+*   **Adding a Banner**: Add an `img` property to your JSON block:
+    ````markdown
+    ```flashcard
+    {
+      "img": "path/to/image.jpg",
+      "items": [ ... ]
+    }
+    ```
+    ````
+*   **Drag-and-Drop**: You can update the banner of any existing launcher by dragging an image from your file explorer or a link from your browser directly onto the launcher container.
+*   **Persistence**: When you drop an image, the plugin automatically updates the source code of your note to save the new image path.
+
+
 ---
 
 ## 🎮 Gestures & Interaction
@@ -105,7 +146,7 @@ To ensure effective learning, **Flash&Quizz** automatically shuffles your decks:
 ## ⚙️ Settings
 
 You can customize the plugin behavior in the **Flash&Quizz** settings tab:
-*   **Language**: Switch between English and French.
+*   **Language**: Choose between English, Français, Deutsch, Español, 中文, 日本語, and Português.
 *   **Score History**: View and manage your last scores for each deck.
 
 ---
@@ -144,7 +185,7 @@ npm run build
 *   **Plugin ID**: `obsidian-flash-quizz`
 *   **Author**: Infinition
 *   **Storage**: Scores are persisted in `data.json` under the `lastScores` record.
-*   **Localization**: Powered by `i18n.ts` (supports English & French).
+*   **Localization**: Powered by `i18n.ts` (supports 7 languages)..
 *   **Code Processors**: Registers `flashcard` and `quizz` as markdown code block processors.
 
 ---
