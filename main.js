@@ -41,16 +41,7 @@ var TRANSLATIONS = {
     incorrect: "Incorrect",
     correct: "Correct",
     settings_language: "Language",
-    settings_language_desc: "Choose the language for the plugin interface.",
-    menu_insert: "Insert Quiz/Flashcard",
-    menu_quiz: "Quiz",
-    menu_quiz_json: "Quiz from JSON file",
-    menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard from JSON file",
-    ribbon_all_flashcards: "All Flashcards",
-    select_folder_title: "Select Folders",
-    all_vault: "All Vault",
-    select_folders: "Select specific folders"
+    settings_language_desc: "Choose the language for the plugin interface."
   },
   fr: {
     json_error: "Erreur JSON : ",
@@ -67,150 +58,11 @@ var TRANSLATIONS = {
     incorrect: "Incorrect",
     correct: "Correct",
     settings_language: "Langue",
-    settings_language_desc: "Choisissez la langue de l'interface du plugin.",
-    menu_insert: "Ins\xE9rer Quizz/Flashcard",
-    menu_quiz: "Quizz",
-    menu_quiz_json: "Quizz depuis un fichier JSON",
-    menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard depuis un fichier JSON",
-    ribbon_all_flashcards: "Toutes les Flashcards",
-    select_folder_title: "S\xE9lectionner les dossiers",
-    all_vault: "Tout le coffre",
-    select_folders: "S\xE9lectionner des dossiers sp\xE9cifiques"
-  },
-  de: {
-    json_error: "JSON-Fehler: ",
-    launch_quiz: "Quiz starten",
-    launch_flashcards: "Flashcards starten",
-    last_score: "Letztes Ergebnis: ",
-    prev_score: "Vorheriges: ",
-    none: "Keines",
-    next: "Weiter",
-    finish: "Beenden",
-    validate: "Validieren",
-    completed: "Abgeschlossen! \u{1F389}",
-    final_score: "Endergebnis: ",
-    incorrect: "Falsch",
-    correct: "Richtig",
-    settings_language: "Sprache",
-    settings_language_desc: "W\xE4hlen Sie die Sprache f\xFCr die Plugin-Oberfl\xE4che.",
-    menu_insert: "Quiz/Flashcard einf\xFCgen",
-    menu_quiz: "Quiz",
-    menu_quiz_json: "Quiz aus JSON-Datei",
-    menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard aus JSON-Datei",
-    ribbon_all_flashcards: "Alle Flashcards",
-    select_folder_title: "Ordner ausw\xE4hlen",
-    all_vault: "Gesamter Vault",
-    select_folders: "Bestimmte Ordner ausw\xE4hlen"
-  },
-  es: {
-    json_error: "Error de JSON: ",
-    launch_quiz: "Iniciar Cuestionario",
-    launch_flashcards: "Iniciar Flashcards",
-    last_score: "\xDAltima puntuaci\xF3n: ",
-    prev_score: "Anterior: ",
-    none: "Ninguno",
-    next: "Siguiente",
-    finish: "Terminar",
-    validate: "Validar",
-    completed: "\xA1Completado! \u{1F389}",
-    final_score: "Puntuaci\xF3n final: ",
-    incorrect: "Incorrecto",
-    correct: "Correcto",
-    settings_language: "Idioma",
-    settings_language_desc: "Elige el idioma para la interfaz del complemento.",
-    menu_insert: "Insertar Cuestionario/Flashcard",
-    menu_quiz: "Cuestionario",
-    menu_quiz_json: "Cuestionario desde archivo JSON",
-    menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard desde archivo JSON",
-    ribbon_all_flashcards: "Todas las Flashcards",
-    select_folder_title: "Seleccionar carpetas",
-    all_vault: "Todo el almac\xE9n",
-    select_folders: "Seleccionar carpetas espec\xEDficas"
-  },
-  zh: {
-    json_error: "JSON \u9519\u8BEF: ",
-    launch_quiz: "\u5F00\u59CB\u6D4B\u9A8C",
-    launch_flashcards: "\u5F00\u59CB\u62BD\u8BA4\u5361",
-    last_score: "\u6700\u8FD1\u5F97\u5206: ",
-    prev_score: "\u4E0A\u6B21\u5F97\u5206: ",
-    none: "\u65E0",
-    next: "\u4E0B\u4E00\u6B65",
-    finish: "\u5B8C\u6210",
-    validate: "\u9A8C\u8BC1",
-    completed: "\u5DF2\u5B8C\u6210\uFF01\u{1F389}",
-    final_score: "\u6700\u7EC8\u5F97\u5206: ",
-    incorrect: "\u9519\u8BEF",
-    correct: "\u6B63\u786E",
-    settings_language: "\u8BED\u8A00",
-    settings_language_desc: "\u9009\u62E9\u63D2\u4EF6\u754C\u9762\u7684\u8BED\u8A00\u3002",
-    menu_insert: "\u63D2\u5165\u6D4B\u9A8C/\u62BD\u8BA4\u5361",
-    menu_quiz: "\u6D4B\u9A8C",
-    menu_quiz_json: "\u4ECE JSON \u6587\u4EF6\u63D2\u5165\u6D4B\u9A8C",
-    menu_flashcard: "\u62BD\u8BA4\u5361",
-    menu_flashcard_json: "\u4ECE JSON \u6587\u4EF6\u63D2\u5165\u62BD\u8BA4\u5361",
-    ribbon_all_flashcards: "\u6240\u6709\u62BD\u8BA4\u5361",
-    select_folder_title: "\u9009\u62E9\u6587\u4EF6\u5939",
-    all_vault: "\u6574\u4E2A\u4FDD\u9669\u5E93",
-    select_folders: "\u9009\u62E9\u7279\u5B9A\u6587\u4EF6\u5939"
-  },
-  ja: {
-    json_error: "JSON\u30A8\u30E9\u30FC: ",
-    launch_quiz: "\u30AF\u30A4\u30BA\u3092\u958B\u59CB",
-    launch_flashcards: "\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9\u3092\u958B\u59CB",
-    last_score: "\u6700\u65B0\u30B9\u30B3\u30A2: ",
-    prev_score: "\u524D\u56DE\u306E\u30B9\u30B3\u30A2: ",
-    none: "\u306A\u3057",
-    next: "\u6B21\u3078",
-    finish: "\u7D42\u4E86",
-    validate: "\u78BA\u8A8D",
-    completed: "\u5B8C\u4E86\uFF01\u{1F389}",
-    final_score: "\u6700\u7D42\u30B9\u30B3\u30A2: ",
-    incorrect: "\u4E0D\u6B63\u89E3",
-    correct: "\u6B63\u89E3",
-    settings_language: "\u8A00\u8A9E",
-    settings_language_desc: "\u30D7\u30E9\u30B0\u30A4\u30F3\u306E\u8868\u793A\u8A00\u8A9E\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
-    menu_insert: "\u30AF\u30A4\u30BA/\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9\u3092\u633F\u5165",
-    menu_quiz: "\u30AF\u30A4\u30BA",
-    menu_quiz_json: "JSON\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u30AF\u30A4\u30BA\u3092\u633F\u5165",
-    menu_flashcard: "\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9",
-    menu_flashcard_json: "JSON\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9\u3092\u633F\u5165",
-    ribbon_all_flashcards: "\u3059\u3079\u3066\u306E\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9",
-    select_folder_title: "\u30D5\u30A9\u30EB\u30C0\u3092\u9078\u629E",
-    all_vault: "\u3059\u3079\u3066\u306E\u4FDD\u7BA1\u5EAB",
-    select_folders: "\u7279\u5B9A\u306E\u30D5\u30A9\u30EB\u30C0\u3092\u9078\u629E"
-  },
-  pt: {
-    json_error: "Erro de JSON: ",
-    launch_quiz: "Iniciar Question\xE1rio",
-    launch_flashcards: "Iniciar Flashcards",
-    last_score: "\xDAltima pontua\xE7\xE3o: ",
-    prev_score: "Anterior: ",
-    none: "Nenhum",
-    next: "Pr\xF3ximo",
-    finish: "Finalizar",
-    validate: "Validar",
-    completed: "Conclu\xEDdo! \u{1F389}",
-    final_score: "Pontua\xE7\xE3o final: ",
-    incorrect: "Incorreto",
-    correct: "Correto",
-    settings_language: "Idioma",
-    settings_language_desc: "Escolha o idioma da interface do plugin.",
-    menu_insert: "Inserir Question\xE1rio/Flashcard",
-    menu_quiz: "Question\xE1rio",
-    menu_quiz_json: "Question\xE1rio de arquivo JSON",
-    menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard de arquivo JSON",
-    ribbon_all_flashcards: "Todas as Flashcards",
-    select_folder_title: "Selecionar pastas",
-    all_vault: "Todo o cofre",
-    select_folders: "Selecionar pastas espec\xEDficas"
+    settings_language_desc: "Choisissez la langue de l'interface du plugin."
   }
 };
 function t(key, lang = "en") {
-  return TRANSLATIONS[lang] && TRANSLATIONS[lang][key] || TRANSLATIONS["en"][key];
+  return TRANSLATIONS[lang][key] || TRANSLATIONS["en"][key];
 }
 
 // main.ts
@@ -241,78 +93,6 @@ var JsonFlashcardPlugin = class extends import_obsidian.Plugin {
     this.registerMarkdownCodeBlockProcessor("quizz", async (source, el, ctx) => {
       this.renderLauncher(source, el, ctx, "quizz");
     });
-    this.registerEvent(
-      this.app.workspace.on("editor-menu", (menu, editor) => {
-        menu.addItem((mainItem) => {
-          mainItem.setTitle(t("menu_insert", this.settings.language)).setIcon("zap").setSection("insert");
-          const subMenu = mainItem.setSubmenu();
-          subMenu.addItem((item) => {
-            item.setTitle(t("menu_quiz", this.settings.language)).setIcon("list-checks").onClick(() => {
-              const template = '```quizz\n[\n  {\n    "question": "",\n    "options": [\n      { "text": "", "correct": true },\n      { "text": "", "correct": false }\n    ]\n  }\n]\n```';
-              editor.replaceSelection(template);
-            });
-          });
-          subMenu.addItem((item) => {
-            item.setTitle(t("menu_quiz_json", this.settings.language)).setIcon("file-json").onClick(() => {
-              const template = '```quizz\n{\n  "file": "path/to/your/file.json"\n}\n```';
-              editor.replaceSelection(template);
-            });
-          });
-          subMenu.addItem((item) => {
-            item.setTitle(t("menu_flashcard", this.settings.language)).setIcon("layers").onClick(() => {
-              const template = '```flashcard\n[\n  {\n    "question": "",\n    "answer": ""\n  }\n]\n```';
-              editor.replaceSelection(template);
-            });
-          });
-          subMenu.addItem((item) => {
-            item.setTitle(t("menu_flashcard_json", this.settings.language)).setIcon("file-json").onClick(() => {
-              const template = '```flashcard\n{\n  "file": "path/to/your/file.json"\n}\n```';
-              editor.replaceSelection(template);
-            });
-          });
-        });
-      })
-    );
-    this.addRibbonIcon("layers", t("ribbon_all_flashcards", this.settings.language), () => {
-      new FolderSelectionModal(this.app, this).open();
-    });
-  }
-  async launchAllFlashcards(folderPaths) {
-    const flashcards = [];
-    const files = this.app.vault.getMarkdownFiles();
-    for (const file of files) {
-      if (folderPaths && folderPaths.length > 0) {
-        const isInSelectedFolder = folderPaths.some((path) => file.path.startsWith(path));
-        if (!isInSelectedFolder) continue;
-      }
-      const content = await this.app.vault.read(file);
-      const regex = /```flashcard\n([\s\S]*?)\n```/g;
-      let match;
-      while ((match = regex.exec(content)) !== null) {
-        try {
-          const source = match[1];
-          const data = JSON.parse(source);
-          let items = [];
-          if (data.file) {
-            const jsonFile = this.app.vault.getAbstractFileByPath(data.file);
-            if (jsonFile instanceof import_obsidian.TFile) {
-              items = JSON.parse(await this.app.vault.read(jsonFile));
-            }
-          } else {
-            items = Array.isArray(data) ? data : data.items || [];
-          }
-          flashcards.push(...items);
-        } catch (e) {
-          console.error(`Error parsing flashcards in ${file.path}:`, e);
-        }
-      }
-    }
-    if (flashcards.length > 0) {
-      const deckId = folderPaths && folderPaths.length > 0 ? `all-flashcards:${folderPaths.sort().join(",")}` : "all-flashcards";
-      new FlashcardModal(this.app, flashcards, deckId, this).open();
-    } else {
-      new import_obsidian.Notice(t("none", this.settings.language));
-    }
   }
   async renderLauncher(source, el, ctx, type) {
     try {
@@ -327,7 +107,7 @@ var JsonFlashcardPlugin = class extends import_obsidian.Plugin {
         items = Array.isArray(data) ? data : data.items || [];
       }
       const deckId = data.id || data.file || `${ctx.sourcePath}#${hashCode(source)}`;
-      const child = new LauncherChild(el, this, deckId, type, items, data.img, ctx);
+      const child = new LauncherChild(el, this, deckId, type, items);
       ctx.addChild(child);
     } catch (e) {
       el.createEl("pre", { text: t("json_error", this.settings.language) + e.message });
@@ -347,14 +127,12 @@ var JsonFlashcardPlugin = class extends import_obsidian.Plugin {
   }
 };
 var LauncherChild = class extends import_obsidian.MarkdownRenderChild {
-  constructor(containerEl, plugin, deckId, type, items, imgUrl, ctx) {
+  constructor(containerEl, plugin, deckId, type, items) {
     super(containerEl);
     this.plugin = plugin;
     this.deckId = deckId;
     this.type = type;
     this.items = items;
-    this.imgUrl = imgUrl;
-    this.ctx = ctx;
   }
   onload() {
     let launchers = this.plugin.activeLaunchers.get(this.deckId);
@@ -375,11 +153,6 @@ var LauncherChild = class extends import_obsidian.MarkdownRenderChild {
   render() {
     this.containerEl.empty();
     const container = this.containerEl.createDiv({ cls: "fc-launcher-container" });
-    if (this.imgUrl) {
-      container.addClass("has-image");
-      const finalUrl = this.resolveImageUrl(this.imgUrl);
-      container.style.backgroundImage = `url("${finalUrl}")`;
-    }
     this.badgeEl = container.createDiv({ cls: "fc-last-score-badge" });
     this.refresh();
     const label = this.type === "quizz" ? t("launch_quiz", this.plugin.settings.language) : t("launch_flashcards", this.plugin.settings.language);
@@ -391,82 +164,6 @@ var LauncherChild = class extends import_obsidian.MarkdownRenderChild {
       if (this.type === "flashcard") new FlashcardModal(this.plugin.app, this.items, this.deckId, this.plugin).open();
       else new QuizModal(this.plugin.app, this.items, this.deckId, this.plugin).open();
     };
-    container.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      container.addClass("is-dragging");
-    });
-    container.addEventListener("dragleave", () => {
-      container.removeClass("is-dragging");
-    });
-    container.addEventListener("drop", async (e) => {
-      e.preventDefault();
-      container.removeClass("is-dragging");
-      let newImgUrl = "";
-      const text = e.dataTransfer?.getData("text/plain");
-      if (text) {
-        if (text.startsWith("obsidian://")) {
-          newImgUrl = text;
-        } else {
-          const match = text.match(/\[\[(.*?)\]\]/) || [null, text];
-          newImgUrl = match[1].split("|")[0].trim();
-        }
-      }
-      if (newImgUrl) {
-        this.imgUrl = newImgUrl;
-        this.render();
-        await this.updateSource(newImgUrl);
-      }
-    });
-  }
-  resolveImageUrl(url) {
-    if (url.startsWith("http")) return url;
-    let path = url;
-    if (url.startsWith("obsidian://")) {
-      try {
-        const match = url.match(/[?&]file=([^&]+)/);
-        if (match) path = decodeURIComponent(match[1]);
-      } catch (e) {
-        console.error("Failed to parse obsidian URL:", e);
-      }
-    }
-    path = path.replace(/^\[\[/, "").replace(/\]\]$/, "").split("|")[0].trim();
-    const file = this.plugin.app.metadataCache.getFirstLinkpathDest(path, "");
-    if (file instanceof import_obsidian.TFile) {
-      return this.plugin.app.vault.adapter.getResourcePath(file.path);
-    }
-    const abstractFile = this.plugin.app.vault.getAbstractFileByPath(path);
-    if (abstractFile instanceof import_obsidian.TFile) {
-      return this.plugin.app.vault.adapter.getResourcePath(abstractFile.path);
-    }
-    return url;
-  }
-  async updateSource(newImgUrl) {
-    if (!this.ctx) return;
-    const file = this.plugin.app.vault.getAbstractFileByPath(this.ctx.sourcePath);
-    if (!(file instanceof import_obsidian.TFile)) return;
-    const section = this.ctx.getSectionInfo(this.containerEl);
-    if (!section) return;
-    const content = await this.plugin.app.vault.read(file);
-    const lines = content.split("\n");
-    const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
-    const blockSource = blockLines.join("\n");
-    try {
-      let data = JSON.parse(blockSource);
-      if (Array.isArray(data)) {
-        data = {
-          img: newImgUrl,
-          items: data
-        };
-      } else {
-        data.img = newImgUrl;
-      }
-      const newBlockSource = JSON.stringify(data, null, 2);
-      lines.splice(section.lineStart + 1, section.lineEnd - section.lineStart - 1, newBlockSource);
-      await this.plugin.app.vault.modify(file, lines.join("\n"));
-      new import_obsidian.Notice("Banner updated!");
-    } catch (e) {
-      console.error("Failed to update image in source:", e);
-    }
   }
   refresh() {
     const lastScore = this.plugin.settings.lastScores[this.deckId];
@@ -490,14 +187,14 @@ var BaseModal = class extends import_obsidian.Modal {
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.swipeThreshold = 50;
-    this.previousScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
   }
   onOpen() {
     this.contentEl.empty();
     this.contentEl.addClass("fc-modal-full");
     const header = this.contentEl.createDiv({ cls: "fc-header-container" });
     const scoreRow = header.createDiv({ cls: "fc-score-row" });
-    scoreRow.createEl("span", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score" });
+    const lastScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
+    scoreRow.createEl("span", { text: `${t("prev_score", this.plugin.settings.language)}${lastScore}`, cls: "fc-prev-score" });
     const progressWrapper = header.createDiv({ cls: "fc-progress-wrapper" });
     const progressBg = progressWrapper.createDiv({ cls: "fc-progress-bg" });
     this.progressFillEl = progressBg.createDiv({ cls: "fc-progress-fill" });
@@ -536,7 +233,6 @@ var BaseModal = class extends import_obsidian.Modal {
   onClose() {
     this.plugin.saveSettings();
     this.plugin.refreshLaunchers(this.deckId);
-    new import_obsidian.Notice(`${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount} (${t("prev_score", this.plugin.settings.language)}${this.previousScore})`);
   }
 };
 var QuizModal = class extends BaseModal {
@@ -606,9 +302,7 @@ var QuizModal = class extends BaseModal {
   showFinalScore() {
     this.gameContainer.empty();
     this.gameContainer.createEl("h2", { text: t("completed", this.plugin.settings.language) });
-    const scoreContainer = this.gameContainer.createDiv({ cls: "fc-final-score-container" });
-    scoreContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
-    scoreContainer.createEl("div", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score-final" });
+    this.gameContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
   }
 };
 var FlashcardModal = class extends BaseModal {
@@ -670,7 +364,7 @@ var FlashcardModal = class extends BaseModal {
         this.currentIndex++;
         this.display();
       } else {
-        this.showFinalScore();
+        this.close();
       }
     }, 400);
   }
@@ -684,50 +378,6 @@ var FlashcardModal = class extends BaseModal {
       this.display();
     }, 400);
   }
-  showFinalScore() {
-    this.cardContainer.addClass("is-hidden");
-    this.scoreGroup.addClass("is-hidden");
-    const finalContainer = this.cardContainer.parentElement?.createDiv({ cls: "fc-final-score-container" });
-    if (finalContainer) {
-      finalContainer.createEl("h2", { text: t("completed", this.plugin.settings.language) });
-      finalContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
-      finalContainer.createEl("div", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score-final" });
-    }
-  }
-};
-var FolderSelectionModal = class extends import_obsidian.Modal {
-  constructor(app, plugin) {
-    super(app);
-    this.plugin = plugin;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    contentEl.empty();
-    contentEl.createEl("h2", { text: t("select_folder_title", this.plugin.settings.language) });
-    const container = contentEl.createDiv({ cls: "fc-folder-selection-container" });
-    const allVaultBtn = container.createEl("button", {
-      text: t("all_vault", this.plugin.settings.language),
-      cls: "mod-cta fc-folder-btn"
-    });
-    allVaultBtn.onclick = () => {
-      this.plugin.launchAllFlashcards();
-      this.close();
-    };
-    container.createEl("hr");
-    container.createEl("h3", { text: t("select_folders", this.plugin.settings.language) });
-    const folderList = container.createDiv({ cls: "fc-folder-list" });
-    const rootFolders = this.app.vault.getRoot().children.filter((f) => f instanceof import_obsidian.TFolder);
-    rootFolders.forEach((folder) => {
-      const folderBtn = folderList.createEl("button", {
-        text: folder.name,
-        cls: "fc-folder-item-btn"
-      });
-      folderBtn.onclick = () => {
-        this.plugin.launchAllFlashcards([folder.path]);
-        this.close();
-      };
-    });
-  }
 };
 var JsonFlashcardSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
@@ -738,7 +388,7 @@ var JsonFlashcardSettingTab = class extends import_obsidian.PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     new import_obsidian.Setting(containerEl).setName(t("settings_language", this.plugin.settings.language)).setDesc(t("settings_language_desc", this.plugin.settings.language)).addDropdown(
-      (dropdown) => dropdown.addOption("en", "English").addOption("fr", "Fran\xE7ais").addOption("de", "Deutsch").addOption("es", "Espa\xF1ol").addOption("zh", "\u7B80\u4F53\u4E2D\u6587").addOption("ja", "\u65E5\u672C\u8A9E").addOption("pt", "Portugu\xEAs").setValue(this.plugin.settings.language).onChange(async (value) => {
+      (dropdown) => dropdown.addOption("en", "English").addOption("fr", "Fran\xE7ais").setValue(this.plugin.settings.language).onChange(async (value) => {
         this.plugin.settings.language = value;
         await this.plugin.saveSettings();
         this.display();
