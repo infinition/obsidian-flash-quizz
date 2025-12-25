@@ -166,7 +166,7 @@ If you want to modify the plugin, you'll need the following source files:
 *   `manifest.json`: Plugin metadata.
 *   `package.json` & `tsconfig.json`: Build configurations.
 
-You can rebuild the plugin using the following command:
+You can rebuild the plugin using the following command :
 
 ```bash
 npx esbuild main.ts --bundle --external:obsidian --outfile=main.js --format=cjs
