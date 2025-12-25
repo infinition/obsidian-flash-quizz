@@ -20,6 +20,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "Quiz from JSON file",
         menu_flashcard: "Flashcard",
         menu_flashcard_json: "Flashcard from JSON file",
+        ribbon_all_flashcards: "All Flashcards",
+        select_folder_title: "Select Folders",
+        all_vault: "All Vault",
+        select_folders: "Select specific folders",
     },
     fr: {
         json_error: "Erreur JSON : ",
@@ -42,6 +46,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "Quizz depuis un fichier JSON",
         menu_flashcard: "Flashcard",
         menu_flashcard_json: "Flashcard depuis un fichier JSON",
+        ribbon_all_flashcards: "Toutes les Flashcards",
+        select_folder_title: "Sélectionner les dossiers",
+        all_vault: "Tout le coffre",
+        select_folders: "Sélectionner des dossiers spécifiques",
     },
     de: {
         json_error: "JSON-Fehler: ",
@@ -64,6 +72,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "Quiz aus JSON-Datei",
         menu_flashcard: "Flashcard",
         menu_flashcard_json: "Flashcard aus JSON-Datei",
+        ribbon_all_flashcards: "Alle Flashcards",
+        select_folder_title: "Ordner auswählen",
+        all_vault: "Gesamter Vault",
+        select_folders: "Bestimmte Ordner auswählen",
     },
     es: {
         json_error: "Error de JSON: ",
@@ -86,6 +98,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "Cuestionario desde archivo JSON",
         menu_flashcard: "Flashcard",
         menu_flashcard_json: "Flashcard desde archivo JSON",
+        ribbon_all_flashcards: "Todas las Flashcards",
+        select_folder_title: "Seleccionar carpetas",
+        all_vault: "Todo el almacén",
+        select_folders: "Seleccionar carpetas específicas",
     },
     zh: {
         json_error: "JSON 错误: ",
@@ -108,6 +124,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "从 JSON 文件插入测验",
         menu_flashcard: "抽认卡",
         menu_flashcard_json: "从 JSON 文件插入抽认卡",
+        ribbon_all_flashcards: "所有抽认卡",
+        select_folder_title: "选择文件夹",
+        all_vault: "整个保险库",
+        select_folders: "选择特定文件夹",
     },
     ja: {
         json_error: "JSONエラー: ",
@@ -130,6 +150,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "JSONファイルからクイズを挿入",
         menu_flashcard: "フラッシュカード",
         menu_flashcard_json: "JSONファイルからフラッシュカードを挿入",
+        ribbon_all_flashcards: "すべてのフラッシュカード",
+        select_folder_title: "フォルダを選択",
+        all_vault: "すべての保管庫",
+        select_folders: "特定のフォルダを選択",
     },
     pt: {
         json_error: "Erro de JSON: ",
@@ -152,6 +176,10 @@ export const TRANSLATIONS = {
         menu_quiz_json: "Questionário de arquivo JSON",
         menu_flashcard: "Flashcard",
         menu_flashcard_json: "Flashcard de arquivo JSON",
+        ribbon_all_flashcards: "Todas as Flashcards",
+        select_folder_title: "Selecionar pastas",
+        all_vault: "Todo o cofre",
+        select_folders: "Selecionar pastas específicas",
     }
 } as const;
 

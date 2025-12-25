@@ -9,10 +9,13 @@
 *   **Dual Learning Modes**:
     *   **3D Flashcards**: Immersive front/back cards with smooth 3D flip animations and self-assessment.
     *   **Interactive Quizzes**: Multiple-choice questions (MCQ) with automated scoring and instant feedback.
+    *   **Global Session**: Launch a combined session containing all flashcards from your entire vault with a single click from the sidebar.
 *   **Premium UI/UX**:
     *   **Modern Design**: Sleek interface with glassmorphism, vibrant colors, and smooth transitions.
     *   **Gestures Support**: Swipe left/right to grade flashcards or navigate through questions.
-    *   **Progress Tracking**: Visual progress bars and score badges to monitor your learning journey.
+    *   **Progress Tracking**: Visual progress bars, score badges, and **end-of-session score comparison** to monitor your learning journey.
+*   **Session Summary**: View your current performance compared to your previous score upon completion or early exit.
+*   **Banner Images**: Personalize your launchers with background images and an intuitive **Drag & Drop** interface.
 *   **Data Flexibility**:
     *   **Inline JSON**: Define your decks directly inside your markdown notes.
     *   **External Files**: Reference `.json` files stored anywhere in your vault.
@@ -25,7 +28,21 @@
 ### 🖱️Context Menu (Fast Insert)
 To quickly add cards or quizzes, right-click in the editor and use the Insert Quiz/Flashcard sub-menu to choose between inline templates or JSON file references.
 
-### 1. Flashcards Mode (`flashcard`)
+### 1. Banner Images & Drag & Drop 🖼️
+
+You can add a background image to any launcher to make it stand out.
+
+*   **Manual**: Add an `"img"` key to your JSON block:
+    ```json
+    {
+      "img": "[[my-banner.jpg]]",
+      "items": [ ... ]
+    }
+    ```
+*   **Drag & Drop**: Drag any image (from your vault or a website) and drop it directly onto the Flashcard or Quiz block.
+*   **Auto-Persistence**: The plugin automatically updates your markdown note to save the image link. If your block was a simple list `[...]`, it will be converted to the object format `{ "img": "...", "items": [...] }` automatically.
+
+### 2. Flashcards Mode (`flashcard`)
 
 Perfect for active recall. Each card requires a `question` and an `answer`.
 
@@ -48,7 +65,7 @@ Perfect for active recall. Each card requires a `question` and an `answer`.
 ```
 ````
 
-### 2. Quizz Mode (`quizz`)
+### 3. Quizz Mode (`quizz`)
 
 Ideal for testing specific knowledge. Each question includes an array of `options`, each with a `text` and a `correct` boolean.
 
@@ -77,6 +94,24 @@ Ideal for testing specific knowledge. Each question includes an array of `option
 { "file": "Resources/Science_Deck.json" }
 ```
 ````
+
+### 4. Global Session (Ribbon Icon)
+
+For a comprehensive review, you can launch a session that aggregates **all flashcards** from every `flashcard` code block in your vault.
+
+*   **How to launch**: Click the **Layers icon** (`layers`) in the Obsidian left ribbon (sidebar).
+*   **Folder Selection**: Upon clicking, a modal will appear allowing you to choose between:
+    *   **All Vault**: Scans every markdown file in your vault.
+    *   **Specific Folder**: Scans only the markdown files within a selected root folder.
+*   **Smart Score Saving**: Scores for global sessions are saved independently based on your selection. For example, a session for your "Biology" folder will have its own "Last Score" separate from an "All Vault" session.
+
+### 5. Session Completion & Scoring
+
+At the end of every session (whether you finish all cards or exit early), **Flash&Quizz** provides a detailed summary:
+*   **Final Score Screen**: For both Flashcards and Quizzes, a dedicated screen displays your final score (e.g., `8/10`).
+*   **Score Comparison**: Your current score is displayed alongside your **previous score** for that specific deck or folder context, allowing you to track your improvement instantly.
+*   **Summary Notice**: Upon closing the session modal, a quick notification appears in the corner of Obsidian with your session summary.
+
 
 ---
 

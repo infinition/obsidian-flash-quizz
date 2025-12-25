@@ -46,7 +46,11 @@ var TRANSLATIONS = {
     menu_quiz: "Quiz",
     menu_quiz_json: "Quiz from JSON file",
     menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard from JSON file"
+    menu_flashcard_json: "Flashcard from JSON file",
+    ribbon_all_flashcards: "All Flashcards",
+    select_folder_title: "Select Folders",
+    all_vault: "All Vault",
+    select_folders: "Select specific folders"
   },
   fr: {
     json_error: "Erreur JSON : ",
@@ -68,7 +72,11 @@ var TRANSLATIONS = {
     menu_quiz: "Quizz",
     menu_quiz_json: "Quizz depuis un fichier JSON",
     menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard depuis un fichier JSON"
+    menu_flashcard_json: "Flashcard depuis un fichier JSON",
+    ribbon_all_flashcards: "Toutes les Flashcards",
+    select_folder_title: "S\xE9lectionner les dossiers",
+    all_vault: "Tout le coffre",
+    select_folders: "S\xE9lectionner des dossiers sp\xE9cifiques"
   },
   de: {
     json_error: "JSON-Fehler: ",
@@ -90,7 +98,11 @@ var TRANSLATIONS = {
     menu_quiz: "Quiz",
     menu_quiz_json: "Quiz aus JSON-Datei",
     menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard aus JSON-Datei"
+    menu_flashcard_json: "Flashcard aus JSON-Datei",
+    ribbon_all_flashcards: "Alle Flashcards",
+    select_folder_title: "Ordner ausw\xE4hlen",
+    all_vault: "Gesamter Vault",
+    select_folders: "Bestimmte Ordner ausw\xE4hlen"
   },
   es: {
     json_error: "Error de JSON: ",
@@ -112,7 +124,11 @@ var TRANSLATIONS = {
     menu_quiz: "Cuestionario",
     menu_quiz_json: "Cuestionario desde archivo JSON",
     menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard desde archivo JSON"
+    menu_flashcard_json: "Flashcard desde archivo JSON",
+    ribbon_all_flashcards: "Todas las Flashcards",
+    select_folder_title: "Seleccionar carpetas",
+    all_vault: "Todo el almac\xE9n",
+    select_folders: "Seleccionar carpetas espec\xEDficas"
   },
   zh: {
     json_error: "JSON \u9519\u8BEF: ",
@@ -134,7 +150,11 @@ var TRANSLATIONS = {
     menu_quiz: "\u6D4B\u9A8C",
     menu_quiz_json: "\u4ECE JSON \u6587\u4EF6\u63D2\u5165\u6D4B\u9A8C",
     menu_flashcard: "\u62BD\u8BA4\u5361",
-    menu_flashcard_json: "\u4ECE JSON \u6587\u4EF6\u63D2\u5165\u62BD\u8BA4\u5361"
+    menu_flashcard_json: "\u4ECE JSON \u6587\u4EF6\u63D2\u5165\u62BD\u8BA4\u5361",
+    ribbon_all_flashcards: "\u6240\u6709\u62BD\u8BA4\u5361",
+    select_folder_title: "\u9009\u62E9\u6587\u4EF6\u5939",
+    all_vault: "\u6574\u4E2A\u4FDD\u9669\u5E93",
+    select_folders: "\u9009\u62E9\u7279\u5B9A\u6587\u4EF6\u5939"
   },
   ja: {
     json_error: "JSON\u30A8\u30E9\u30FC: ",
@@ -156,7 +176,11 @@ var TRANSLATIONS = {
     menu_quiz: "\u30AF\u30A4\u30BA",
     menu_quiz_json: "JSON\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u30AF\u30A4\u30BA\u3092\u633F\u5165",
     menu_flashcard: "\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9",
-    menu_flashcard_json: "JSON\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9\u3092\u633F\u5165"
+    menu_flashcard_json: "JSON\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9\u3092\u633F\u5165",
+    ribbon_all_flashcards: "\u3059\u3079\u3066\u306E\u30D5\u30E9\u30C3\u30B7\u30E5\u30AB\u30FC\u30C9",
+    select_folder_title: "\u30D5\u30A9\u30EB\u30C0\u3092\u9078\u629E",
+    all_vault: "\u3059\u3079\u3066\u306E\u4FDD\u7BA1\u5EAB",
+    select_folders: "\u7279\u5B9A\u306E\u30D5\u30A9\u30EB\u30C0\u3092\u9078\u629E"
   },
   pt: {
     json_error: "Erro de JSON: ",
@@ -178,7 +202,11 @@ var TRANSLATIONS = {
     menu_quiz: "Question\xE1rio",
     menu_quiz_json: "Question\xE1rio de arquivo JSON",
     menu_flashcard: "Flashcard",
-    menu_flashcard_json: "Flashcard de arquivo JSON"
+    menu_flashcard_json: "Flashcard de arquivo JSON",
+    ribbon_all_flashcards: "Todas as Flashcards",
+    select_folder_title: "Selecionar pastas",
+    all_vault: "Todo o cofre",
+    select_folders: "Selecionar pastas espec\xEDficas"
   }
 };
 function t(key, lang = "en") {
@@ -245,6 +273,46 @@ var JsonFlashcardPlugin = class extends import_obsidian.Plugin {
         });
       })
     );
+    this.addRibbonIcon("layers", t("ribbon_all_flashcards", this.settings.language), () => {
+      new FolderSelectionModal(this.app, this).open();
+    });
+  }
+  async launchAllFlashcards(folderPaths) {
+    const flashcards = [];
+    const files = this.app.vault.getMarkdownFiles();
+    for (const file of files) {
+      if (folderPaths && folderPaths.length > 0) {
+        const isInSelectedFolder = folderPaths.some((path) => file.path.startsWith(path));
+        if (!isInSelectedFolder) continue;
+      }
+      const content = await this.app.vault.read(file);
+      const regex = /```flashcard\n([\s\S]*?)\n```/g;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        try {
+          const source = match[1];
+          const data = JSON.parse(source);
+          let items = [];
+          if (data.file) {
+            const jsonFile = this.app.vault.getAbstractFileByPath(data.file);
+            if (jsonFile instanceof import_obsidian.TFile) {
+              items = JSON.parse(await this.app.vault.read(jsonFile));
+            }
+          } else {
+            items = Array.isArray(data) ? data : data.items || [];
+          }
+          flashcards.push(...items);
+        } catch (e) {
+          console.error(`Error parsing flashcards in ${file.path}:`, e);
+        }
+      }
+    }
+    if (flashcards.length > 0) {
+      const deckId = folderPaths && folderPaths.length > 0 ? `all-flashcards:${folderPaths.sort().join(",")}` : "all-flashcards";
+      new FlashcardModal(this.app, flashcards, deckId, this).open();
+    } else {
+      new import_obsidian.Notice(t("none", this.settings.language));
+    }
   }
   async renderLauncher(source, el, ctx, type) {
     try {
@@ -259,7 +327,7 @@ var JsonFlashcardPlugin = class extends import_obsidian.Plugin {
         items = Array.isArray(data) ? data : data.items || [];
       }
       const deckId = data.id || data.file || `${ctx.sourcePath}#${hashCode(source)}`;
-      const child = new LauncherChild(el, this, deckId, type, items);
+      const child = new LauncherChild(el, this, deckId, type, items, data.img, ctx);
       ctx.addChild(child);
     } catch (e) {
       el.createEl("pre", { text: t("json_error", this.settings.language) + e.message });
@@ -279,12 +347,14 @@ var JsonFlashcardPlugin = class extends import_obsidian.Plugin {
   }
 };
 var LauncherChild = class extends import_obsidian.MarkdownRenderChild {
-  constructor(containerEl, plugin, deckId, type, items) {
+  constructor(containerEl, plugin, deckId, type, items, imgUrl, ctx) {
     super(containerEl);
     this.plugin = plugin;
     this.deckId = deckId;
     this.type = type;
     this.items = items;
+    this.imgUrl = imgUrl;
+    this.ctx = ctx;
   }
   onload() {
     let launchers = this.plugin.activeLaunchers.get(this.deckId);
@@ -305,6 +375,11 @@ var LauncherChild = class extends import_obsidian.MarkdownRenderChild {
   render() {
     this.containerEl.empty();
     const container = this.containerEl.createDiv({ cls: "fc-launcher-container" });
+    if (this.imgUrl) {
+      container.addClass("has-image");
+      const finalUrl = this.resolveImageUrl(this.imgUrl);
+      container.style.backgroundImage = `url("${finalUrl}")`;
+    }
     this.badgeEl = container.createDiv({ cls: "fc-last-score-badge" });
     this.refresh();
     const label = this.type === "quizz" ? t("launch_quiz", this.plugin.settings.language) : t("launch_flashcards", this.plugin.settings.language);
@@ -316,6 +391,82 @@ var LauncherChild = class extends import_obsidian.MarkdownRenderChild {
       if (this.type === "flashcard") new FlashcardModal(this.plugin.app, this.items, this.deckId, this.plugin).open();
       else new QuizModal(this.plugin.app, this.items, this.deckId, this.plugin).open();
     };
+    container.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      container.addClass("is-dragging");
+    });
+    container.addEventListener("dragleave", () => {
+      container.removeClass("is-dragging");
+    });
+    container.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      container.removeClass("is-dragging");
+      let newImgUrl = "";
+      const text = e.dataTransfer?.getData("text/plain");
+      if (text) {
+        if (text.startsWith("obsidian://")) {
+          newImgUrl = text;
+        } else {
+          const match = text.match(/\[\[(.*?)\]\]/) || [null, text];
+          newImgUrl = match[1].split("|")[0].trim();
+        }
+      }
+      if (newImgUrl) {
+        this.imgUrl = newImgUrl;
+        this.render();
+        await this.updateSource(newImgUrl);
+      }
+    });
+  }
+  resolveImageUrl(url) {
+    if (url.startsWith("http")) return url;
+    let path = url;
+    if (url.startsWith("obsidian://")) {
+      try {
+        const match = url.match(/[?&]file=([^&]+)/);
+        if (match) path = decodeURIComponent(match[1]);
+      } catch (e) {
+        console.error("Failed to parse obsidian URL:", e);
+      }
+    }
+    path = path.replace(/^\[\[/, "").replace(/\]\]$/, "").split("|")[0].trim();
+    const file = this.plugin.app.metadataCache.getFirstLinkpathDest(path, "");
+    if (file instanceof import_obsidian.TFile) {
+      return this.plugin.app.vault.adapter.getResourcePath(file.path);
+    }
+    const abstractFile = this.plugin.app.vault.getAbstractFileByPath(path);
+    if (abstractFile instanceof import_obsidian.TFile) {
+      return this.plugin.app.vault.adapter.getResourcePath(abstractFile.path);
+    }
+    return url;
+  }
+  async updateSource(newImgUrl) {
+    if (!this.ctx) return;
+    const file = this.plugin.app.vault.getAbstractFileByPath(this.ctx.sourcePath);
+    if (!(file instanceof import_obsidian.TFile)) return;
+    const section = this.ctx.getSectionInfo(this.containerEl);
+    if (!section) return;
+    const content = await this.plugin.app.vault.read(file);
+    const lines = content.split("\n");
+    const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
+    const blockSource = blockLines.join("\n");
+    try {
+      let data = JSON.parse(blockSource);
+      if (Array.isArray(data)) {
+        data = {
+          img: newImgUrl,
+          items: data
+        };
+      } else {
+        data.img = newImgUrl;
+      }
+      const newBlockSource = JSON.stringify(data, null, 2);
+      lines.splice(section.lineStart + 1, section.lineEnd - section.lineStart - 1, newBlockSource);
+      await this.plugin.app.vault.modify(file, lines.join("\n"));
+      new import_obsidian.Notice("Banner updated!");
+    } catch (e) {
+      console.error("Failed to update image in source:", e);
+    }
   }
   refresh() {
     const lastScore = this.plugin.settings.lastScores[this.deckId];
@@ -339,14 +490,14 @@ var BaseModal = class extends import_obsidian.Modal {
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.swipeThreshold = 50;
+    this.previousScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
   }
   onOpen() {
     this.contentEl.empty();
     this.contentEl.addClass("fc-modal-full");
     const header = this.contentEl.createDiv({ cls: "fc-header-container" });
     const scoreRow = header.createDiv({ cls: "fc-score-row" });
-    const lastScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
-    scoreRow.createEl("span", { text: `${t("prev_score", this.plugin.settings.language)}${lastScore}`, cls: "fc-prev-score" });
+    scoreRow.createEl("span", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score" });
     const progressWrapper = header.createDiv({ cls: "fc-progress-wrapper" });
     const progressBg = progressWrapper.createDiv({ cls: "fc-progress-bg" });
     this.progressFillEl = progressBg.createDiv({ cls: "fc-progress-fill" });
@@ -385,6 +536,7 @@ var BaseModal = class extends import_obsidian.Modal {
   onClose() {
     this.plugin.saveSettings();
     this.plugin.refreshLaunchers(this.deckId);
+    new import_obsidian.Notice(`${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount} (${t("prev_score", this.plugin.settings.language)}${this.previousScore})`);
   }
 };
 var QuizModal = class extends BaseModal {
@@ -454,7 +606,9 @@ var QuizModal = class extends BaseModal {
   showFinalScore() {
     this.gameContainer.empty();
     this.gameContainer.createEl("h2", { text: t("completed", this.plugin.settings.language) });
-    this.gameContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
+    const scoreContainer = this.gameContainer.createDiv({ cls: "fc-final-score-container" });
+    scoreContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
+    scoreContainer.createEl("div", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score-final" });
   }
 };
 var FlashcardModal = class extends BaseModal {
@@ -516,7 +670,7 @@ var FlashcardModal = class extends BaseModal {
         this.currentIndex++;
         this.display();
       } else {
-        this.close();
+        this.showFinalScore();
       }
     }, 400);
   }
@@ -529,6 +683,50 @@ var FlashcardModal = class extends BaseModal {
       this.currentIndex = nextIndex;
       this.display();
     }, 400);
+  }
+  showFinalScore() {
+    this.cardContainer.addClass("is-hidden");
+    this.scoreGroup.addClass("is-hidden");
+    const finalContainer = this.cardContainer.parentElement?.createDiv({ cls: "fc-final-score-container" });
+    if (finalContainer) {
+      finalContainer.createEl("h2", { text: t("completed", this.plugin.settings.language) });
+      finalContainer.createEl("div", { text: `${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount}`, cls: "fc-final-score" });
+      finalContainer.createEl("div", { text: `${t("prev_score", this.plugin.settings.language)}${this.previousScore}`, cls: "fc-prev-score-final" });
+    }
+  }
+};
+var FolderSelectionModal = class extends import_obsidian.Modal {
+  constructor(app, plugin) {
+    super(app);
+    this.plugin = plugin;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h2", { text: t("select_folder_title", this.plugin.settings.language) });
+    const container = contentEl.createDiv({ cls: "fc-folder-selection-container" });
+    const allVaultBtn = container.createEl("button", {
+      text: t("all_vault", this.plugin.settings.language),
+      cls: "mod-cta fc-folder-btn"
+    });
+    allVaultBtn.onclick = () => {
+      this.plugin.launchAllFlashcards();
+      this.close();
+    };
+    container.createEl("hr");
+    container.createEl("h3", { text: t("select_folders", this.plugin.settings.language) });
+    const folderList = container.createDiv({ cls: "fc-folder-list" });
+    const rootFolders = this.app.vault.getRoot().children.filter((f) => f instanceof import_obsidian.TFolder);
+    rootFolders.forEach((folder) => {
+      const folderBtn = folderList.createEl("button", {
+        text: folder.name,
+        cls: "fc-folder-item-btn"
+      });
+      folderBtn.onclick = () => {
+        this.plugin.launchAllFlashcards([folder.path]);
+        this.close();
+      };
+    });
   }
 };
 var JsonFlashcardSettingTab = class extends import_obsidian.PluginSettingTab {
