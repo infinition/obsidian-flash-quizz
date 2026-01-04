@@ -50,7 +50,9 @@ var TRANSLATIONS = {
     ribbon_all_flashcards: "All Flashcards",
     select_folder_title: "Select Folder",
     all_vault: "All Vault",
-    select_folders: "Or select a specific folder:"
+    select_folders: "Or select a specific folder:",
+    select_specific_folder: "Select specific folder",
+    select_specific_note: "Select specific note"
   },
   fr: {
     json_error: "Erreur JSON : ",
@@ -76,7 +78,9 @@ var TRANSLATIONS = {
     ribbon_all_flashcards: "Toutes les Flashcards",
     select_folder_title: "S\xE9lectionner un dossier",
     all_vault: "Tout le coffre",
-    select_folders: "Ou choisir un dossier sp\xE9cifique :"
+    select_folders: "Ou choisir un dossier sp\xE9cifique :",
+    select_specific_folder: "S\xE9lectionner un dossier sp\xE9cifique",
+    select_specific_note: "S\xE9lectionner une note sp\xE9cifique"
   },
   de: {
     json_error: "JSON-Fehler: ",
@@ -695,6 +699,36 @@ var FlashcardModal = class extends BaseModal {
     }
   }
 };
+var FolderFuzzySuggestModal = class extends import_obsidian.FuzzySuggestModal {
+  constructor(app, plugin) {
+    super(app);
+    this.plugin = plugin;
+  }
+  getItems() {
+    return this.app.vault.getAllLoadedFiles().filter((f) => f instanceof import_obsidian.TFolder);
+  }
+  getItemText(item) {
+    return item.path;
+  }
+  onChooseItem(item, evt) {
+    this.plugin.launchAllFlashcards([item.path]);
+  }
+};
+var FileFuzzySuggestModal = class extends import_obsidian.FuzzySuggestModal {
+  constructor(app, plugin) {
+    super(app);
+    this.plugin = plugin;
+  }
+  getItems() {
+    return this.app.vault.getMarkdownFiles();
+  }
+  getItemText(item) {
+    return item.path;
+  }
+  onChooseItem(item, evt) {
+    this.plugin.launchAllFlashcards([item.path]);
+  }
+};
 var FolderSelectionModal = class extends import_obsidian.Modal {
   constructor(app, plugin) {
     super(app);
@@ -711,6 +745,24 @@ var FolderSelectionModal = class extends import_obsidian.Modal {
     });
     allVaultBtn.onclick = () => {
       this.plugin.launchAllFlashcards();
+      this.close();
+    };
+    const searchFolderBtn = container.createEl("button", {
+      text: t("select_specific_folder", this.plugin.settings.language),
+      cls: "mod-cta fc-folder-btn",
+      style: "margin-top: 10px;"
+    });
+    searchFolderBtn.onclick = () => {
+      new FolderFuzzySuggestModal(this.app, this.plugin).open();
+      this.close();
+    };
+    const searchNoteBtn = container.createEl("button", {
+      text: t("select_specific_note", this.plugin.settings.language),
+      cls: "mod-cta fc-folder-btn",
+      style: "margin-top: 10px;"
+    });
+    searchNoteBtn.onclick = () => {
+      new FileFuzzySuggestModal(this.app, this.plugin).open();
       this.close();
     };
     container.createEl("hr");

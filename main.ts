@@ -1,4 +1,4 @@
-import { App, Modal, Plugin, TFile, TFolder, setIcon, MarkdownRenderChild, MarkdownPostProcessorContext, PluginSettingTab, Setting, Editor, Menu, Notice } from 'obsidian';
+import { App, Modal, Plugin, TFile, TFolder, setIcon, MarkdownRenderChild, MarkdownPostProcessorContext, PluginSettingTab, Setting, Editor, Menu, Notice, FuzzySuggestModal } from 'obsidian';
 import { t, Language } from './i18n';
 
 // --- INTERFACES ---
@@ -654,6 +654,42 @@ class FlashcardModal extends BaseModal {
 
 // --- MODALE DE SELECTION DE DOSSIER ---
 
+class FolderFuzzySuggestModal extends FuzzySuggestModal<TFolder> {
+    constructor(app: App, public plugin: JsonFlashcardPlugin) {
+        super(app);
+    }
+
+    getItems(): TFolder[] {
+        return this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder) as TFolder[];
+    }
+
+    getItemText(item: TFolder): string {
+        return item.path;
+    }
+
+    onChooseItem(item: TFolder, evt: MouseEvent | KeyboardEvent): void {
+        this.plugin.launchAllFlashcards([item.path]);
+    }
+}
+
+class FileFuzzySuggestModal extends FuzzySuggestModal<TFile> {
+    constructor(app: App, public plugin: JsonFlashcardPlugin) {
+        super(app);
+    }
+
+    getItems(): TFile[] {
+        return this.app.vault.getMarkdownFiles();
+    }
+
+    getItemText(item: TFile): string {
+        return item.path;
+    }
+
+    onChooseItem(item: TFile, evt: MouseEvent | KeyboardEvent): void {
+        this.plugin.launchAllFlashcards([item.path]);
+    }
+}
+
 class FolderSelectionModal extends Modal {
     constructor(app: App, public plugin: JsonFlashcardPlugin) {
         super(app);
@@ -672,6 +708,26 @@ class FolderSelectionModal extends Modal {
         });
         allVaultBtn.onclick = () => {
             this.plugin.launchAllFlashcards();
+            this.close();
+        };
+
+        const searchFolderBtn = container.createEl("button", {
+            text: t("select_specific_folder", this.plugin.settings.language),
+            cls: "mod-cta fc-folder-btn",
+            style: "margin-top: 10px;"
+        });
+        searchFolderBtn.onclick = () => {
+            new FolderFuzzySuggestModal(this.app, this.plugin).open();
+            this.close();
+        };
+
+        const searchNoteBtn = container.createEl("button", {
+            text: t("select_specific_note", this.plugin.settings.language),
+            cls: "mod-cta fc-folder-btn",
+            style: "margin-top: 10px;"
+        });
+        searchNoteBtn.onclick = () => {
+            new FileFuzzySuggestModal(this.app, this.plugin).open();
             this.close();
         };
 

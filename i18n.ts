@@ -24,6 +24,8 @@ export const TRANSLATIONS = {
         select_folder_title: "Select Folder",
         all_vault: "All Vault",
         select_folders: "Or select a specific folder:",
+        select_specific_folder: "Select specific folder",
+        select_specific_note: "Select specific note",
     },
     fr: {
         json_error: "Erreur JSON : ",
@@ -50,6 +52,8 @@ export const TRANSLATIONS = {
         select_folder_title: "Sélectionner un dossier",
         all_vault: "Tout le coffre",
         select_folders: "Ou choisir un dossier spécifique :",
+        select_specific_folder: "Sélectionner un dossier spécifique",
+        select_specific_note: "Sélectionner une note spécifique",
     },
     de: {
         json_error: "JSON-Fehler: ",
