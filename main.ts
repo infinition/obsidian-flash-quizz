@@ -26,16 +26,22 @@ interface SRSItem {
 }
 
 interface PluginSettings {
-    lastScores: Record<string, string>;
     language: Language;
     learningMode: 'random' | 'srs';
+}
+
+interface ProgressData {
+    lastScores: Record<string, string>;
     srsData: Record<string, SRSItem>;
 }
 
 const DEFAULT_SETTINGS: PluginSettings = {
-    lastScores: {},
     language: 'en',
-    learningMode: 'random',
+    learningMode: 'random'
+};
+
+const DEFAULT_PROGRESS: ProgressData = {
+    lastScores: {},
     srsData: {}
 };
 
@@ -74,10 +80,12 @@ function hashCode(s: string): string {
 
 export default class JsonFlashcardPlugin extends Plugin {
     settings: PluginSettings;
+    progress: ProgressData;
     activeLaunchers: Map<string, Set<LauncherChild>> = new Map();
 
     async onload() {
         await this.loadSettings();
+        await this.loadProgress();
 
         this.addSettingTab(new JsonFlashcardSettingTab(this.app, this));
 
@@ -89,7 +97,7 @@ export default class JsonFlashcardPlugin extends Plugin {
             this.renderLauncher(source, el, ctx, "quizz");
         });
 
-        // --- AJOUT DU SOUS-MENU CONTEXTUEL ---
+        // --- CONTEXT MENU ---
         this.registerEvent(
             this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor) => {
                 menu.addItem((mainItem) => {
@@ -143,10 +151,86 @@ export default class JsonFlashcardPlugin extends Plugin {
             })
         );
 
-        // --- AJOUT DE L'ICÔNE DANS LA BARRE LATERALE ---
-        this.addRibbonIcon("layers", t("ribbon_all_flashcards", this.settings.language), () => {
-            new FolderSelectionModal(this.app, this).open();
+        // --- RIBBON ICON ---
+        this.addRibbonIcon("library", t("library_title", this.settings.language), () => {
+            new LibraryModal(this.app, this).open();
         });
+
+        // --- COMMANDS ---
+        this.addCommand({
+            id: 'open-library',
+            name: t("library_title", this.settings.language),
+            callback: () => new LibraryModal(this.app, this).open()
+        });
+
+        this.addCommand({
+            id: 'launch-all-flashcards',
+            name: t("ribbon_all_flashcards", this.settings.language) + " (Vault)",
+            callback: () => this.launchAllFlashcards()
+        });
+
+        this.addCommand({
+            id: 'launch-all-quizzes',
+            name: t("launch_quiz", this.settings.language) + " (Vault)",
+            callback: () => this.launchAllQuizzes()
+        });
+
+        this.addCommand({
+            id: 'launch-flashcards-folder',
+            name: t("launch_flashcards", this.settings.language) + " (Folder)",
+            callback: () => new FolderFuzzySuggestModal(this.app, this, "flashcard").open()
+        });
+
+        this.addCommand({
+            id: 'launch-quizzes-folder',
+            name: t("launch_quiz", this.settings.language) + " (Folder)",
+            callback: () => new FolderFuzzySuggestModal(this.app, this, "quizz").open()
+        });
+    }
+
+    async scanVault() {
+        const files = this.app.vault.getMarkdownFiles();
+        const results: { file: TFile, flashcards: number, quizzes: number }[] = [];
+
+        for (const file of files) {
+            const content = await this.app.vault.read(file);
+            const fMatches = content.match(/```flashcard/g);
+            const qMatches = content.match(/```quizz/g);
+
+            if (fMatches || qMatches) {
+                results.push({
+                    file,
+                    flashcards: fMatches ? fMatches.length : 0,
+                    quizzes: qMatches ? qMatches.length : 0
+                });
+            }
+        }
+        return results;
+    }
+
+    async loadItemsFromFile(file: TFile, type: "flashcard" | "quizz"): Promise<any[]> {
+        const content = await this.app.vault.read(file);
+        const regex = type === "flashcard" ? /```flashcard\n([\s\S]*?)\n```/g : /```quizz\n([\s\S]*?)\n```/g;
+        const items: any[] = [];
+        let match;
+
+        while ((match = regex.exec(content)) !== null) {
+            try {
+                const source = match[1];
+                const data = JSON.parse(source);
+                if (data.file) {
+                    const jsonFile = this.app.vault.getAbstractFileByPath(data.file);
+                    if (jsonFile instanceof TFile) {
+                        items.push(...JSON.parse(await this.app.vault.read(jsonFile)));
+                    }
+                } else {
+                    items.push(...(Array.isArray(data) ? data : (data.items || [])));
+                }
+            } catch (e) {
+                console.error(`Error parsing ${type} in ${file.path}:`, e);
+            }
+        }
+        return items;
     }
 
     async launchAllFlashcards(folderPaths?: string[]) {
@@ -158,36 +242,32 @@ export default class JsonFlashcardPlugin extends Plugin {
                 const isInSelectedFolder = folderPaths.some(path => file.path.startsWith(path));
                 if (!isInSelectedFolder) continue;
             }
-
-            const content = await this.app.vault.read(file);
-            const regex = /```flashcard\n([\s\S]*?)\n```/g;
-            let match;
-
-            while ((match = regex.exec(content)) !== null) {
-                try {
-                    const source = match[1];
-                    const data = JSON.parse(source);
-                    let items: Flashcard[] = [];
-
-                    if (data.file) {
-                        const jsonFile = this.app.vault.getAbstractFileByPath(data.file);
-                        if (jsonFile instanceof TFile) {
-                            items = JSON.parse(await this.app.vault.read(jsonFile));
-                        }
-                    } else {
-                        items = Array.isArray(data) ? data : (data.items || []);
-                    }
-
-                    flashcards.push(...items);
-                } catch (e) {
-                    console.error(`Error parsing flashcards in ${file.path}:`, e);
-                }
-            }
+            flashcards.push(...await this.loadItemsFromFile(file, "flashcard"));
         }
 
         if (flashcards.length > 0) {
             const deckId = folderPaths && folderPaths.length > 0 ? `all-flashcards:${folderPaths.sort().join(",")}` : "all-flashcards";
-            new FlashcardModal(this.plugin.app, flashcards, deckId, this).open();
+            new FlashcardModal(this.app, flashcards, deckId, this).open();
+        } else {
+            new Notice(t("none", this.settings.language));
+        }
+    }
+
+    async launchAllQuizzes(folderPaths?: string[]) {
+        const quizzes: QuizQuestion[] = [];
+        const files = this.app.vault.getMarkdownFiles();
+
+        for (const file of files) {
+            if (folderPaths && folderPaths.length > 0) {
+                const isInSelectedFolder = folderPaths.some(path => file.path.startsWith(path));
+                if (!isInSelectedFolder) continue;
+            }
+            quizzes.push(...await this.loadItemsFromFile(file, "quizz"));
+        }
+
+        if (quizzes.length > 0) {
+            const deckId = folderPaths && folderPaths.length > 0 ? `all-quizzes:${folderPaths.sort().join(",")}` : "all-quizzes";
+            new QuizModal(this.app, quizzes, deckId, this).open();
         } else {
             new Notice(t("none", this.settings.language));
         }
@@ -223,16 +303,221 @@ export default class JsonFlashcardPlugin extends Plugin {
         }
     }
 
-    async loadSettings() { this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData()); }
+    async loadSettings() {
+        const data = await this.loadData();
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
+
+        // Migration logic: if data.json contains progress, move it to progress.json
+        if (data && (data.lastScores || data.srsData)) {
+            this.progress = {
+                lastScores: data.lastScores || {},
+                srsData: data.srsData || {}
+            };
+            await this.saveProgress();
+
+            // Remove progress from settings and save data.json
+            delete (this.settings as any).lastScores;
+            delete (this.settings as any).srsData;
+            await this.saveSettings();
+        }
+    }
+
     async saveSettings() { await this.saveData(this.settings); }
+
+    async loadProgress() {
+        const path = `${this.manifest.dir}/progress.json`;
+        if (await this.app.vault.adapter.exists(path)) {
+            const content = await this.app.vault.adapter.read(path);
+            try {
+                this.progress = Object.assign({}, DEFAULT_PROGRESS, JSON.parse(content));
+            } catch (e) {
+                console.error("Failed to parse progress.json:", e);
+                this.progress = Object.assign({}, DEFAULT_PROGRESS);
+            }
+        } else {
+            this.progress = Object.assign({}, DEFAULT_PROGRESS);
+        }
+    }
+
+    async saveProgress() {
+        const path = `${this.manifest.dir}/progress.json`;
+        await this.app.vault.adapter.write(path, JSON.stringify(this.progress, null, 2));
+    }
 
     getSRSStats() {
         const now = Date.now();
-        const items = Object.values(this.settings.srsData);
+        const items = Object.values(this.progress.srsData);
         const total = items.length;
         const due = items.filter(item => item.nextReview <= now).length;
         const learned = items.filter(item => item.reps > 0).length;
         return { total, due, learned };
+    }
+}
+
+// --- LIBRARY MODAL ---
+
+class LibraryModal extends Modal {
+    activeTab: "flashcard" | "quizz" | "folder" = "flashcard";
+
+    constructor(app: App, public plugin: JsonFlashcardPlugin) {
+        super(app);
+    }
+
+    async onOpen() {
+        const { contentEl } = this;
+        this.modalEl.addClass("fc-modal-full");
+        contentEl.empty();
+
+        contentEl.createEl("h2", { text: t("library_title", this.plugin.settings.language) });
+
+        const container = contentEl.createDiv({ cls: "fc-library-container" });
+
+        // Tabs
+        const tabs = container.createDiv({ cls: "fc-library-tabs" });
+        const tabF = tabs.createDiv({ text: t("library_tab_flashcards", this.plugin.settings.language), cls: "fc-library-tab" });
+        const tabQ = tabs.createDiv({ text: t("library_tab_quizzes", this.plugin.settings.language), cls: "fc-library-tab" });
+        const tabD = tabs.createDiv({ text: t("library_tab_folders", this.plugin.settings.language), cls: "fc-library-tab" });
+
+        const header = container.createDiv({ cls: "fc-library-header" });
+        const searchInput = header.createEl("input", {
+            type: "text",
+            placeholder: t("library_search_placeholder", this.plugin.settings.language),
+            cls: "fc-library-search"
+        });
+
+        const launchAllBtn = header.createEl("button", {
+            text: t("library_launch_all", this.plugin.settings.language),
+            cls: "mod-cta"
+        });
+
+        const listContainer = container.createDiv({ cls: "fc-library-list" });
+
+        const refreshList = async (filter = "") => {
+            listContainer.empty();
+            header.style.display = this.activeTab === "folder" ? "none" : "flex";
+
+            if (this.activeTab === "folder") {
+                this.renderFolderTab(listContainer);
+                return;
+            }
+
+            const results = await this.plugin.scanVault();
+            const filtered = results.filter(r => {
+                const matchesFilter = r.file.path.toLowerCase().includes(filter.toLowerCase());
+                const hasType = this.activeTab === "flashcard" ? r.flashcards > 0 : r.quizzes > 0;
+                return matchesFilter && hasType;
+            });
+
+            if (filtered.length === 0) {
+                listContainer.createEl("div", { text: t("library_no_items", this.plugin.settings.language), cls: "fc-library-no-items" });
+                return;
+            }
+
+            filtered.forEach(res => {
+                const item = listContainer.createDiv({ cls: "fc-library-item" });
+                const info = item.createDiv({ cls: "fc-library-item-info" });
+                info.createDiv({ text: res.file.basename, cls: "fc-library-item-name" });
+
+                const count = this.activeTab === "flashcard" ? res.flashcards : res.quizzes;
+                info.createDiv({
+                    text: `${count} ${this.activeTab === "flashcard" ? "flashcards" : "quizzes"}`,
+                    cls: "fc-library-item-meta"
+                });
+
+                const actions = item.createDiv({ cls: "fc-library-item-actions" });
+                const btn = actions.createEl("button", { text: "Launch", cls: "mod-cta" });
+                btn.onclick = async () => {
+                    const items = await this.plugin.loadItemsFromFile(res.file, this.activeTab as any);
+                    if (this.activeTab === "flashcard") new FlashcardModal(this.app, items, res.file.path, this.plugin).open();
+                    else new QuizModal(this.app, items, res.file.path, this.plugin).open();
+                };
+            });
+        };
+
+        const switchTab = (tab: "flashcard" | "quizz" | "folder") => {
+            this.activeTab = tab;
+            tabF.toggleClass("is-active", tab === "flashcard");
+            tabQ.toggleClass("is-active", tab === "quizz");
+            tabD.toggleClass("is-active", tab === "folder");
+            refreshList(searchInput.value);
+        };
+
+        tabF.onclick = () => switchTab("flashcard");
+        tabQ.onclick = () => switchTab("quizz");
+        tabD.onclick = () => switchTab("folder");
+
+        searchInput.oninput = () => refreshList(searchInput.value);
+
+        launchAllBtn.onclick = () => {
+            if (this.activeTab === "flashcard") this.plugin.launchAllFlashcards();
+            else if (this.activeTab === "quizz") this.plugin.launchAllQuizzes();
+        };
+
+        switchTab("flashcard");
+    }
+
+    renderFolderTab(container: HTMLElement) {
+        const folderContainer = container.createDiv({ cls: "fc-folder-selection-container" });
+
+        // --- ALL VAULT ---
+        const allVaultItem = folderContainer.createDiv({ cls: "fc-library-item" });
+        const allVaultInfo = allVaultItem.createDiv({ cls: "fc-library-item-info" });
+        allVaultInfo.createDiv({ text: t("all_vault", this.plugin.settings.language), cls: "fc-library-item-name" });
+
+        const allVaultActions = allVaultItem.createDiv({ cls: "fc-library-item-actions" });
+        const allVaultF = allVaultActions.createEl("button", { text: "Flashcards", cls: "mod-cta" });
+        allVaultF.onclick = () => {
+            this.plugin.launchAllFlashcards();
+            this.close();
+        };
+        const allVaultQ = allVaultActions.createEl("button", { text: "Quizzes", cls: "mod-cta" });
+        allVaultQ.onclick = () => {
+            this.plugin.launchAllQuizzes();
+            this.close();
+        };
+
+        // --- SELECT SPECIFIC ---
+        const specificItem = folderContainer.createDiv({ cls: "fc-library-item" });
+        const specificInfo = specificItem.createDiv({ cls: "fc-library-item-info" });
+        specificInfo.createDiv({ text: t("select_specific_folder", this.plugin.settings.language), cls: "fc-library-item-name" });
+
+        const specificActions = specificItem.createDiv({ cls: "fc-library-item-actions" });
+        const specificF = specificActions.createEl("button", { text: "Flashcards", cls: "mod-cta" });
+        specificF.onclick = () => {
+            new FolderFuzzySuggestModal(this.app, this.plugin, "flashcard").open();
+            this.close();
+        };
+        const specificQ = specificActions.createEl("button", { text: "Quizzes", cls: "mod-cta" });
+        specificQ.onclick = () => {
+            new FolderFuzzySuggestModal(this.app, this.plugin, "quizz").open();
+            this.close();
+        };
+
+        folderContainer.createEl("hr");
+        folderContainer.createEl("h3", { text: t("select_folders", this.plugin.settings.language) });
+
+        const folderList = folderContainer.createDiv({ cls: "fc-folder-list" });
+        const rootFolders = this.app.vault.getRoot().children.filter(f => f instanceof TFolder) as TFolder[];
+
+        rootFolders.forEach(folder => {
+            const item = folderList.createDiv({ cls: "fc-library-item" });
+            const info = item.createDiv({ cls: "fc-library-item-info" });
+            info.createDiv({ text: folder.name, cls: "fc-library-item-name" });
+
+            const actions = item.createDiv({ cls: "fc-library-item-actions" });
+
+            const btnF = actions.createEl("button", { text: "Flashcards", cls: "mod-cta" });
+            btnF.onclick = () => {
+                this.plugin.launchAllFlashcards([folder.path]);
+                this.close();
+            };
+
+            const btnQ = actions.createEl("button", { text: "Quizzes", cls: "mod-cta" });
+            btnQ.onclick = () => {
+                this.plugin.launchAllQuizzes([folder.path]);
+                this.close();
+            };
+        });
     }
 }
 
@@ -396,7 +681,7 @@ class LauncherChild extends MarkdownRenderChild {
     }
 
     refresh() {
-        const lastScore = this.plugin.settings.lastScores[this.deckId];
+        const lastScore = this.plugin.progress.lastScores[this.deckId];
         if (lastScore) {
             this.badgeEl.setText(`${t("last_score", this.plugin.settings.language)}${lastScore}`);
             this.badgeEl.removeClass("is-hidden");
@@ -424,7 +709,7 @@ abstract class BaseModal extends Modal {
 
     constructor(app: App, public deckId: string, public plugin: JsonFlashcardPlugin) {
         super(app);
-        this.previousScore = this.plugin.settings.lastScores[this.deckId] || t("none", this.plugin.settings.language);
+        this.previousScore = this.plugin.progress.lastScores[this.deckId] || t("none", this.plugin.settings.language);
     }
 
     onOpen() {
@@ -478,11 +763,12 @@ abstract class BaseModal extends Modal {
     async updateScore(isCorrect: boolean) {
         this.viewedCount++;
         if (isCorrect) this.correctCount++;
-        this.plugin.settings.lastScores[this.deckId] = `${this.correctCount}/${this.viewedCount}`;
+        this.plugin.progress.lastScores[this.deckId] = `${this.correctCount}/${this.viewedCount}`;
     }
 
     onClose() {
         this.plugin.saveSettings();
+        this.plugin.saveProgress();
         this.plugin.refreshLaunchers(this.deckId);
         new Notice(`${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount} (${t("prev_score", this.plugin.settings.language)}${this.previousScore})`);
     }
@@ -493,7 +779,7 @@ abstract class BaseModal extends Modal {
         const now = Date.now();
         return items.filter(item => {
             const id = hashCode(item.question);
-            const data = this.plugin.settings.srsData[id];
+            const data = this.plugin.progress.srsData[id];
             return !data || data.nextReview <= now;
         }).sort(() => Math.random() - 0.5);
     }
@@ -551,7 +837,7 @@ class QuizModal extends BaseModal {
         // Update SRS
         if (this.plugin.settings.learningMode === 'srs') {
             const id = hashCode(q.question);
-            this.plugin.settings.srsData[id] = updateSRS(this.plugin.settings.srsData[id], isCorrect ? 4 : 0);
+            this.plugin.progress.srsData[id] = updateSRS(this.plugin.progress.srsData[id], isCorrect ? 4 : 0);
         }
 
         const shuffledOptions = (this.optionsList as any)._shuffledOptions;
@@ -729,7 +1015,7 @@ class FlashcardModal extends BaseModal {
 
         const card = this.cards[this.currentIndex];
         const id = hashCode(card.question);
-        this.plugin.settings.srsData[id] = updateSRS(this.plugin.settings.srsData[id], quality);
+        this.plugin.progress.srsData[id] = updateSRS(this.plugin.progress.srsData[id], quality);
 
         this.cardContainer.addClass(quality >= 3 ? "swipe-right" : "swipe-left");
         await this.updateScore(quality >= 3);
@@ -771,7 +1057,7 @@ class FlashcardModal extends BaseModal {
 // --- MODALE DE SELECTION DE DOSSIER ---
 
 class FolderFuzzySuggestModal extends FuzzySuggestModal<TFolder> {
-    constructor(app: App, public plugin: JsonFlashcardPlugin) {
+    constructor(app: App, public plugin: JsonFlashcardPlugin, public type: "flashcard" | "quizz") {
         super(app);
     }
 
@@ -784,12 +1070,13 @@ class FolderFuzzySuggestModal extends FuzzySuggestModal<TFolder> {
     }
 
     onChooseItem(item: TFolder, evt: MouseEvent | KeyboardEvent): void {
-        this.plugin.launchAllFlashcards([item.path]);
+        if (this.type === "flashcard") this.plugin.launchAllFlashcards([item.path]);
+        else this.plugin.launchAllQuizzes([item.path]);
     }
 }
 
 class FileFuzzySuggestModal extends FuzzySuggestModal<TFile> {
-    constructor(app: App, public plugin: JsonFlashcardPlugin) {
+    constructor(app: App, public plugin: JsonFlashcardPlugin, public type: "flashcard" | "quizz") {
         super(app);
     }
 
@@ -802,67 +1089,8 @@ class FileFuzzySuggestModal extends FuzzySuggestModal<TFile> {
     }
 
     onChooseItem(item: TFile, evt: MouseEvent | KeyboardEvent): void {
-        this.plugin.launchAllFlashcards([item.path]);
-    }
-}
-
-class FolderSelectionModal extends Modal {
-    constructor(app: App, public plugin: JsonFlashcardPlugin) {
-        super(app);
-    }
-
-    onOpen() {
-        const { contentEl } = this;
-        contentEl.empty();
-        contentEl.createEl("h2", { text: t("select_folder_title", this.plugin.settings.language) });
-
-        const container = contentEl.createDiv({ cls: "fc-folder-selection-container" });
-
-        const allVaultBtn = container.createEl("button", {
-            text: t("all_vault", this.plugin.settings.language),
-            cls: "mod-cta fc-folder-btn"
-        });
-        allVaultBtn.onclick = () => {
-            this.plugin.launchAllFlashcards();
-            this.close();
-        };
-
-        const searchFolderBtn = container.createEl("button", {
-            text: t("select_specific_folder", this.plugin.settings.language),
-            cls: "mod-cta fc-folder-btn",
-            style: "margin-top: 10px;"
-        });
-        searchFolderBtn.onclick = () => {
-            new FolderFuzzySuggestModal(this.app, this.plugin).open();
-            this.close();
-        };
-
-        const searchNoteBtn = container.createEl("button", {
-            text: t("select_specific_note", this.plugin.settings.language),
-            cls: "mod-cta fc-folder-btn",
-            style: "margin-top: 10px;"
-        });
-        searchNoteBtn.onclick = () => {
-            new FileFuzzySuggestModal(this.app, this.plugin).open();
-            this.close();
-        };
-
-        container.createEl("hr");
-        container.createEl("h3", { text: t("select_folders", this.plugin.settings.language) });
-
-        const folderList = container.createDiv({ cls: "fc-folder-list" });
-        const rootFolders = this.app.vault.getRoot().children.filter(f => f instanceof TFolder) as TFolder[];
-
-        rootFolders.forEach(folder => {
-            const folderBtn = folderList.createEl("button", {
-                text: folder.name,
-                cls: "fc-folder-item-btn"
-            });
-            folderBtn.onclick = () => {
-                this.plugin.launchAllFlashcards([folder.path]);
-                this.close();
-            };
-        });
+        if (this.type === "flashcard") this.plugin.launchAllFlashcards([item.path]);
+        else this.plugin.launchAllQuizzes([item.path]);
     }
 }
 
@@ -929,8 +1157,8 @@ class JsonFlashcardSettingTab extends PluginSettingTab {
                 .setWarning()
                 .onClick(async () => {
                     if (confirm(t("settings_reset_confirm", this.plugin.settings.language))) {
-                        this.plugin.settings.lastScores = {};
-                        await this.plugin.saveSettings();
+                        this.plugin.progress.lastScores = {};
+                        await this.plugin.saveProgress();
                         new Notice("Scores reset!");
                         this.display();
                     }
@@ -945,8 +1173,8 @@ class JsonFlashcardSettingTab extends PluginSettingTab {
                 .setWarning()
                 .onClick(async () => {
                     if (confirm(t("settings_reset_confirm", this.plugin.settings.language))) {
-                        this.plugin.settings.srsData = {};
-                        await this.plugin.saveSettings();
+                        this.plugin.progress.srsData = {};
+                        await this.plugin.saveProgress();
                         new Notice("SRS data reset!");
                         this.display();
                     }

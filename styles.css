@@ -1,5 +1,5 @@
-/* Main Modal Layout */
-.modal.fc-modal-full {
+/* Base Modal Styles */
+.fc-modal-full {
     width: 90vw !important;
     max-width: 1000px !important;
     height: 85vh !important;
@@ -9,45 +9,50 @@
 }
 
 .fc-modal-full .modal-content {
-    padding: 0 !important;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow-y: auto !important;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    padding: 20px;
+    overflow: hidden;
+    /* Prevent double scrollbar, let children handle it */
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
 .fc-modal-full .modal-content::-webkit-scrollbar {
     display: none;
 }
 
+/* Hide scrollbar for IE, Edge and Firefox */
+.fc-modal-full .modal-content {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* Header & Progress */
 .fc-header-container {
-    padding: 20px;
-    border-bottom: 1px solid var(--background-modifier-border);
-    background: var(--background-primary);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .fc-score-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .fc-prev-score {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: var(--text-muted);
 }
 
 .fc-progress-wrapper {
     position: relative;
-    height: 24px;
+    height: 20px;
     background: var(--background-secondary);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -59,8 +64,8 @@
 .fc-progress-fill {
     height: 100%;
     background: var(--interactive-accent);
+    transition: width 0.3s ease;
     width: 0%;
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fc-progress-label {
@@ -72,9 +77,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85em;
+    font-size: 0.75em;
     font-weight: bold;
-    color: var(--text-on-accent);
+    color: var(--text-normal);
     mix-blend-mode: difference;
 }
 
@@ -84,88 +89,84 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    gap: 20px;
+    justify-content: center;
+    gap: 25px;
+    padding: 20px 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
+.fc-game-container.slide-next {
+    transform: translateX(-50px);
+    opacity: 0;
+}
+
+/* Question Text */
 .fc-question-text {
     text-align: center;
-    font-size: 1.5em;
-    max-width: 800px;
-    margin: 10px 0;
+    margin: 0;
+    font-size: 1.6em;
     line-height: 1.4;
-    color: var(--text-accent);
+    max-width: 800px;
+    word-wrap: break-word;
 }
 
-/* Options */
+/* Options List */
 .fc-options-list {
-    width: 100%;
-    max-width: 700px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
+    max-width: 500px;
 }
 
 .fc-option-btn {
     width: 100%;
-    min-height: 44px;
-    height: auto !important;
-    padding: 12px 18px;
+    padding: 15px 20px;
     text-align: left;
     background: var(--background-primary);
     border: 1px solid var(--background-modifier-border);
     border-radius: 10px;
-    transition: all 0.2s ease;
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.1em;
+    line-height: 1.3;
     white-space: normal;
-    word-wrap: break-word;
-    line-height: 1.4;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
+    height: auto;
+    min-height: 50px;
 }
 
 .fc-option-btn:hover {
     background: var(--background-modifier-hover);
     border-color: var(--interactive-accent);
-    transform: translateX(4px);
+    transform: translateY(-2px);
 }
 
 .fc-option-btn.is-selected {
+    background: var(--background-modifier-hover);
     border-color: var(--interactive-accent);
-    background: var(--background-secondary);
-    box-shadow: 0 0 0 1px var(--interactive-accent);
+    box-shadow: 0 0 0 2px var(--interactive-accent);
 }
 
 .fc-option-btn.is-correct {
-    background-color: #2ecc71 !important;
-    color: white !important;
-    border-color: #27ae60;
+    background: rgba(46, 204, 113, 0.2) !important;
+    border-color: #2ecc71 !important;
+    color: #2ecc71 !important;
 }
 
 .fc-option-btn.is-wrong {
-    background-color: #e74c3c !important;
-    color: white !important;
-    border-color: #c0392b;
-}
-
-.fc-btn-validate {
-    margin-top: 10px;
-    padding: 10px 30px;
-    font-size: 1.1em;
+    background: rgba(231, 76, 60, 0.2) !important;
+    border-color: #e74c3c !important;
+    color: #e74c3c !important;
 }
 
 /* Flashcard Specific */
 .fc-card-container {
-    perspective: 1000px;
     width: 100%;
-    height: 40vh;
-    max-width: 500px;
+    max-width: 600px;
+    height: 350px;
+    perspective: 1000px;
     cursor: pointer;
-    position: relative;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
-    margin: 20px 0;
+    flex-shrink: 0;
 }
 
 .fc-card-inner {
@@ -186,124 +187,108 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    border-radius: 16px;
-    border: 2px solid var(--interactive-accent);
-    background: var(--background-primary);
+    padding: 40px;
+    border-radius: 20px;
+    background: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    font-size: 1.5em;
     box-shadow: var(--shadow-l);
-    font-size: 1.3em;
-    user-select: none;
     overflow-y: auto;
+}
+
+.fc-card-front {
+    color: #3498db;
 }
 
 .fc-card-back {
     transform: rotateY(180deg);
-    border-color: var(--color-green);
+    background: var(--background-primary);
+    color: var(--text-normal);
 }
 
 /* Swipe Animations */
-.fc-card-container.swipe-right {
-    transform: translateX(150%) rotate(30deg) !important;
+.swipe-right {
+    transform: translateX(100vw) rotate(20deg) !important;
     opacity: 0;
 }
 
-.fc-card-container.swipe-left {
-    transform: translateX(-150%) rotate(-30deg) !important;
+.swipe-left {
+    transform: translateX(-100vw) rotate(-20deg) !important;
     opacity: 0;
 }
 
-.fc-card-container.swipe-up {
-    transform: translateY(-150%) !important;
+.swipe-up {
+    transform: translateY(-100vh) !important;
     opacity: 0;
 }
 
-.fc-card-container.swipe-down {
-    transform: translateY(150%) !important;
+.swipe-down {
+    transform: translateY(100vh) !important;
     opacity: 0;
 }
 
-.fc-game-container.slide-next {
-    animation: slideNext 0.4s ease-out;
-}
-
-@keyframes slideNext {
-    from {
-        transform: translateX(30px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
+/* Action Buttons */
 .fc-score-group {
     display: flex;
     gap: 15px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .fc-score-group.is-hidden {
     visibility: hidden;
+    pointer-events: none;
 }
 
 .fc-btn-wrong {
-    background-color: var(--color-red) !important;
+    background: #e74c3c !important;
     color: white !important;
 }
 
 .fc-btn-right {
-    background-color: var(--color-green) !important;
+    background: #2ecc71 !important;
     color: white !important;
 }
 
 /* SRS Buttons */
 .fc-btn-srs {
-    padding: 8px 16px;
-    font-size: 0.9em;
+    padding: 10px 20px;
+    border-radius: 8px;
     font-weight: bold;
-    border-radius: 6px;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s ease;
 }
 
 .fc-btn-srs:hover {
     transform: translateY(-2px);
-    opacity: 0.9;
 }
 
 .fc-btn-again {
-    background-color: #e74c3c !important;
+    background: #e74c3c !important;
     color: white !important;
 }
 
 .fc-btn-hard {
-    background-color: #e67e22 !important;
+    background: #f39c12 !important;
     color: white !important;
 }
 
 .fc-btn-good {
-    background-color: #2ecc71 !important;
+    background: #3498db !important;
     color: white !important;
 }
 
 .fc-btn-easy {
-    background-color: #3498db !important;
+    background: #2ecc71 !important;
     color: white !important;
 }
 
 /* Final Score */
 .fc-final-score-container {
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.5s ease;
 }
 
 .fc-final-score {
@@ -334,29 +319,34 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding: 10px 0;
+}
+
+.fc-folder-selection-container hr {
+    margin: 10px 0;
+    border: none;
+    border-top: 1px solid var(--background-modifier-border);
+    opacity: 0.5;
+}
+
+.fc-folder-selection-container h3 {
+    color: var(--interactive-accent);
+    text-transform: uppercase;
+    font-size: 0.9em;
+    margin: 5px 0;
+    letter-spacing: 1px;
 }
 
 .fc-folder-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
-    max-height: 250px;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 5px;
 }
 
 .fc-folder-btn {
     width: 100%;
-    padding: 10px;
-}
-
-.fc-folder-item-btn {
-    padding: 8px;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.9em;
+    padding: 12px;
 }
 
 /* Launcher */
@@ -434,4 +424,171 @@
 .fc-settings-stats div {
     font-size: 0.9em;
     color: var(--text-muted);
+}
+
+/* Library View */
+.fc-library-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.fc-library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.fc-library-search {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    color: var(--text-normal);
+}
+
+.fc-library-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 5px;
+}
+
+.fc-library-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: var(--background-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--background-modifier-border);
+    transition: all 0.2s ease;
+    gap: 15px;
+}
+
+.fc-library-item:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-modifier-hover);
+}
+
+.fc-library-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    flex: 1;
+}
+
+.fc-library-item-name {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fc-library-item-meta {
+    font-size: 0.8em;
+    color: var(--text-muted);
+}
+
+.fc-library-item-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.fc-library-item-actions button {
+    padding: 6px 12px;
+    font-size: 0.85em;
+    white-space: nowrap;
+}
+
+/* Tabs */
+.fc-library-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.fc-library-tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.fc-library-tab:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+.fc-library-tab.is-active {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+/* Mobile Adaptation */
+.is-mobile .fc-modal-full {
+    width: 85vw !important;
+    height: 80vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 12px !important;
+}
+
+.is-mobile .fc-modal-full .modal-content {
+    padding: 15px;
+    overflow: hidden;
+    /* Ensure no double scroll on mobile too */
+}
+
+.is-mobile .fc-question-text {
+    font-size: 1.3em;
+}
+
+.is-mobile .fc-option-btn {
+    font-size: 1em;
+    padding: 12px 15px;
+}
+
+.is-mobile .fc-card-container {
+    height: 300px;
+}
+
+.is-mobile .fc-card-front,
+.is-mobile .fc-card-back {
+    font-size: 1.2em;
+    padding: 20px;
+}
+
+.is-mobile .fc-score-group {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.is-mobile .fc-btn-srs {
+    padding: 8px 12px;
+    font-size: 0.9em;
+}
+
+.is-mobile .fc-game-container {
+    gap: 15px;
+    padding: 10px 0;
+}
+
+/* Avoid scrollbars on mobile */
+.is-mobile .modal-content::-webkit-scrollbar {
+    display: none;
 }

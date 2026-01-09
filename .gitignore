@@ -5,7 +5,8 @@ node_modules/
 main.js
 
 # Local settings/data
-data.json
+# data.json
+progress.json
 
 # OS-specific files
 .DS_Store
