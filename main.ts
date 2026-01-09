@@ -18,15 +18,49 @@ interface QuizQuestion {
     options: QuizOption[];
 }
 
+interface SRSItem {
+    nextReview: number; // timestamp
+    interval: number; // days
+    ease: number; // ease factor
+    reps: number; // number of successful repetitions
+}
+
 interface PluginSettings {
     lastScores: Record<string, string>;
     language: Language;
+    learningMode: 'random' | 'srs';
+    srsData: Record<string, SRSItem>;
 }
 
 const DEFAULT_SETTINGS: PluginSettings = {
     lastScores: {},
-    language: 'en'
+    language: 'en',
+    learningMode: 'random',
+    srsData: {}
 };
+
+// --- SRS LOGIC (SM-2 Algorithm) ---
+
+function updateSRS(item: SRSItem | undefined, quality: number): SRSItem {
+    let { interval, ease, reps } = item || { interval: 0, ease: 2.5, reps: 0 };
+
+    if (quality >= 3) {
+        if (reps === 0) interval = 1;
+        else if (reps === 1) interval = 6;
+        else interval = Math.round(interval * ease);
+        reps++;
+    } else {
+        reps = 0;
+        interval = 1;
+    }
+
+    ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    if (ease < 1.3) ease = 1.3;
+
+    const nextReview = Date.now() + interval * 24 * 60 * 60 * 1000;
+
+    return { nextReview, interval, ease, reps };
+}
 
 function hashCode(s: string): string {
     let hash = 0;
@@ -404,9 +438,9 @@ abstract class BaseModal extends Modal {
 
     updateProgressUI(total: number) {
         const current = this.currentIndex + 1;
-        const percent = (current / total) * 100;
+        const percent = total > 0 ? (current / total) * 100 : 0;
         this.progressFillEl.style.width = `${percent}%`;
-        this.progressTextEl.setText(`${current} / ${total}`);
+        this.progressTextEl.setText(`${total > 0 ? current : 0} / ${total}`);
     }
 
     setupSwipe() {
@@ -443,6 +477,17 @@ abstract class BaseModal extends Modal {
         this.plugin.refreshLaunchers(this.deckId);
         new Notice(`${t("final_score", this.plugin.settings.language)}${this.correctCount}/${this.viewedCount} (${t("prev_score", this.plugin.settings.language)}${this.previousScore})`);
     }
+
+    filterDueItems<T extends { question: string }>(items: T[]): T[] {
+        if (this.plugin.settings.learningMode === 'random') return [...items].sort(() => Math.random() - 0.5);
+
+        const now = Date.now();
+        return items.filter(item => {
+            const id = hashCode(item.question);
+            const data = this.plugin.settings.srsData[id];
+            return !data || data.nextReview <= now;
+        }).sort(() => Math.random() - 0.5);
+    }
 }
 
 // --- MODALE QUIZZ (QCM) ---
@@ -457,15 +502,20 @@ class QuizModal extends BaseModal {
 
     constructor(app: App, questions: QuizQuestion[], deckId: string, plugin: JsonFlashcardPlugin) {
         super(app, deckId, plugin);
-        this.questions = [...questions].sort(() => Math.random() - 0.5);
+        this.questions = this.filterDueItems(questions);
     }
 
     renderGame(contentEl: HTMLElement) {
         this.gameContainer = contentEl.createDiv({ cls: "fc-game-container" });
+        if (this.questions.length === 0) {
+            this.gameContainer.createEl("h2", { text: t("no_items_due", this.plugin.settings.language) });
+            return;
+        }
         this.displayQuestion();
     }
 
     handleSwipe(direction: "left" | "right" | "up" | "down") {
+        if (this.questions.length === 0) return;
         if (direction === "left" || direction === "right") this.handleAction();
     }
 
@@ -488,6 +538,12 @@ class QuizModal extends BaseModal {
             correctIndices.every(i => this.selectedOptions.has(i as number));
 
         await this.updateScore(isCorrect);
+
+        // Update SRS
+        if (this.plugin.settings.learningMode === 'srs') {
+            const id = hashCode(q.question);
+            this.plugin.settings.srsData[id] = updateSRS(this.plugin.settings.srsData[id], isCorrect ? 4 : 0);
+        }
 
         const shuffledOptions = (this.optionsList as any)._shuffledOptions;
         Array.from(this.optionsList.children).forEach((child: HTMLElement, idx) => {
@@ -520,8 +576,18 @@ class QuizModal extends BaseModal {
         this.optionsList = this.gameContainer.createDiv({ cls: "fc-options-list" });
         (this.optionsList as any)._shuffledOptions = shuffledOptions;
 
-        shuffledOptions.forEach((opt) => {
+        shuffledOptions.forEach((opt, idx) => {
             const btn = this.optionsList.createEl("button", { text: opt.text, cls: "fc-option-btn" });
+
+            // Add staggered animation
+            btn.style.opacity = "0";
+            btn.style.transform = "translateY(10px)";
+            setTimeout(() => {
+                btn.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+                btn.style.opacity = "1";
+                btn.style.transform = "translateY(0)";
+            }, 50 * idx);
+
             btn.onclick = () => {
                 if (this.isAnswered) return;
                 btn.toggleClass("is-selected", !btn.hasClass("is-selected"));
@@ -558,11 +624,16 @@ class FlashcardModal extends BaseModal {
 
     constructor(app: App, cards: Flashcard[], deckId: string, plugin: JsonFlashcardPlugin) {
         super(app, deckId, plugin);
-        this.cards = [...cards].sort(() => Math.random() - 0.5);
+        this.cards = this.filterDueItems(cards);
     }
 
     renderGame(contentEl: HTMLElement) {
         const container = contentEl.createDiv({ cls: "fc-game-container" });
+        if (this.cards.length === 0) {
+            container.createEl("h2", { text: t("no_items_due", this.plugin.settings.language) });
+            return;
+        }
+
         this.cardContainer = container.createDiv({ cls: "fc-card-container" });
         const inner = this.cardContainer.createDiv({ cls: "fc-card-inner" });
         this.cardFront = inner.createDiv({ cls: "fc-card-front" });
@@ -571,20 +642,35 @@ class FlashcardModal extends BaseModal {
         this.cardContainer.onclick = () => this.flip();
 
         this.scoreGroup = container.createDiv({ cls: "fc-score-group is-hidden" });
-        const btnWrong = this.scoreGroup.createEl("button", { text: t("incorrect", this.plugin.settings.language), cls: "fc-btn-wrong" });
-        const btnRight = this.scoreGroup.createEl("button", { text: t("correct", this.plugin.settings.language), cls: "fc-btn-right" });
 
-        btnWrong.onclick = () => this.record(false);
-        btnRight.onclick = () => this.record(true);
+        if (this.plugin.settings.learningMode === 'srs') {
+            const btnAgain = this.scoreGroup.createEl("button", { text: t("srs_again", this.plugin.settings.language), cls: "fc-btn-srs fc-btn-again" });
+            const btnHard = this.scoreGroup.createEl("button", { text: t("srs_hard", this.plugin.settings.language), cls: "fc-btn-srs fc-btn-hard" });
+            const btnGood = this.scoreGroup.createEl("button", { text: t("srs_good", this.plugin.settings.language), cls: "fc-btn-srs fc-btn-good" });
+            const btnEasy = this.scoreGroup.createEl("button", { text: t("srs_easy", this.plugin.settings.language), cls: "fc-btn-srs fc-btn-easy" });
+
+            btnAgain.onclick = () => this.recordSRS(0);
+            btnHard.onclick = () => this.recordSRS(3);
+            btnGood.onclick = () => this.recordSRS(4);
+            btnEasy.onclick = () => this.recordSRS(5);
+        } else {
+            const btnWrong = this.scoreGroup.createEl("button", { text: t("incorrect", this.plugin.settings.language), cls: "fc-btn-wrong" });
+            const btnRight = this.scoreGroup.createEl("button", { text: t("correct", this.plugin.settings.language), cls: "fc-btn-right" });
+
+            btnWrong.onclick = () => this.record(false);
+            btnRight.onclick = () => this.record(true);
+        }
 
         this.display();
     }
 
     handleSwipe(direction: "left" | "right" | "up" | "down") {
-        if (this.isAnimating) return;
-        if (direction === "right") this.record(true);
-        else if (direction === "left") this.record(false);
-        else if (direction === "up") this.navigate(1, "swipe-up");
+        if (this.cards.length === 0 || this.isAnimating) return;
+        if (this.plugin.settings.learningMode === 'random') {
+            if (direction === "right") this.record(true);
+            else if (direction === "left") this.record(false);
+        }
+        if (direction === "up") this.navigate(1, "swipe-up");
         else if (direction === "down") this.navigate(-1, "swipe-down");
     }
 
@@ -617,6 +703,27 @@ class FlashcardModal extends BaseModal {
         this.isAnimating = true;
         this.cardContainer.addClass(correct ? "swipe-right" : "swipe-left");
         await this.updateScore(correct);
+
+        setTimeout(() => {
+            if (this.currentIndex < this.cards.length - 1) {
+                this.currentIndex++;
+                this.display();
+            } else {
+                this.showFinalScore();
+            }
+        }, 400);
+    }
+
+    async recordSRS(quality: number) {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
+
+        const card = this.cards[this.currentIndex];
+        const id = hashCode(card.question);
+        this.plugin.settings.srsData[id] = updateSRS(this.plugin.settings.srsData[id], quality);
+
+        this.cardContainer.addClass(quality >= 3 ? "swipe-right" : "swipe-left");
+        await this.updateScore(quality >= 3);
 
         setTimeout(() => {
             if (this.currentIndex < this.cards.length - 1) {
@@ -776,6 +883,20 @@ class JsonFlashcardSettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.language)
                 .onChange(async (value: Language) => {
                     this.plugin.settings.language = value;
+                    await this.plugin.saveSettings();
+                    this.display();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName(t("settings_learning_mode", this.plugin.settings.language))
+            .setDesc(t("settings_learning_mode_desc", this.plugin.settings.language))
+            .addDropdown(dropdown => dropdown
+                .addOption('random', t("mode_random", this.plugin.settings.language))
+                .addOption('srs', t("mode_srs", this.plugin.settings.language))
+                .setValue(this.plugin.settings.learningMode)
+                .onChange(async (value: 'random' | 'srs') => {
+                    this.plugin.settings.learningMode = value;
                     await this.plugin.saveSettings();
                     this.display();
                 })

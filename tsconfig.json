@@ -11,8 +11,17 @@
     "importHelpers": true,
     "isolatedModules": true,
     "strict": false,
-    "lib": ["DOM", "ES5", "ES6", "ES7"],
-    "types": ["node"]
+    "lib": [
+      "DOM",
+      "ES5",
+      "ES6",
+      "ES7"
+    ],
+    "types": [
+      "node"
+    ]
   },
-  "include": ["main.ts"]
+  "include": [
+    "**/*.ts"
+  ]
 }
