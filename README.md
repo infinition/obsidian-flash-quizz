@@ -2,7 +2,7 @@
 
 **Flash&Quizz** is a powerful and aesthetic Obsidian plugin that transforms your JSON data into interactive learning tools. Whether you're using inline JSON or external files, you can study with beautiful **3D Flashcards** or test your knowledge with automated **Quizzes**.
 
-Now featuring a full **Spaced Repetition System (SRS)** to optimize your long-term retention!
+Now featuring a full **Spaced Repetition System (SRS)** and **Modern UI Enhancements**!
 
 ---
 
@@ -15,12 +15,15 @@ Now featuring a full **Spaced Repetition System (SRS)** to optimize your long-te
     *   **SM-2 Algorithm**: Uses the proven SuperMemo-2 algorithm to schedule your reviews at the perfect time.
     *   **Learning Modes**: Switch between **Random** (shuffle all) and **Spaced Repetition** (only due items) in settings.
     *   **Anki-like Grading**: Rate your recall with **Again**, **Hard**, **Good**, and **Easy** buttons.
-    *   **Smart Filtering**: Automatically hides items that aren't due yet, so you can focus on what needs review.
+    *   **SRS Statistics**: Track your progress with **Total**, **Due**, and **Learned** items directly in the settings.
+    *   **Reset Functionality**: Easily clear your SRS data or score history to start fresh.
 *   **Global Session**: Launch a combined session containing all flashcards from your entire vault or specific folders.
 *   **Premium UI/UX**:
-    *   **Modern Design**: Sleek interface with glassmorphism, vibrant colors, and smooth transitions.
+    *   **Full-Width Modals**: Optimized layout that takes up 90% of the screen for better readability.
+    *   **Responsive Typography**: Font sizes and spacing automatically adjust to prevent clipping and overlapping.
+    *   **Scrolling Support**: Smooth vertical scrolling for long questions, answers, or option lists.
+    *   **Staggered Animations**: Dynamic entry animations for quiz options and smooth 3D flips for cards.
     *   **Gestures Support**: Swipe left/right to grade flashcards or navigate through questions.
-    *   **Progress Tracking**: Visual progress bars, score badges, and end-of-session score comparison.
 *   **Multilingual**: Full support for **English**, **French**, **German**, **Spanish**, **Chinese**, **Japanese**, and **Portuguese**.
 *   **Data Flexibility**: Supports both inline JSON and external `.json` files.
 *   **Banner Image Support**: Personalize launchers with custom images via the `img` property or drag-and-drop.
@@ -98,7 +101,8 @@ To enable SRS:
 *   **Learning Mode**:
     *   **Random**: Shuffles all items in the deck.
     *   **Spaced Repetition**: Uses the SM-2 algorithm to filter and schedule items.
-*   **Score History**: View your last performance for each deck.
+*   **SRS Statistics**: View your learning progress (Total, Due, Learned).
+*   **Reset Buttons**: Independently reset your **Score History** or **SRS Progression**.
 
 ---
 

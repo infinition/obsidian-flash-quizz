@@ -187,7 +187,7 @@ export default class JsonFlashcardPlugin extends Plugin {
 
         if (flashcards.length > 0) {
             const deckId = folderPaths && folderPaths.length > 0 ? `all-flashcards:${folderPaths.sort().join(",")}` : "all-flashcards";
-            new FlashcardModal(this.app, flashcards, deckId, this).open();
+            new FlashcardModal(this.plugin.app, flashcards, deckId, this).open();
         } else {
             new Notice(t("none", this.settings.language));
         }
@@ -225,6 +225,15 @@ export default class JsonFlashcardPlugin extends Plugin {
 
     async loadSettings() { this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData()); }
     async saveSettings() { await this.saveData(this.settings); }
+
+    getSRSStats() {
+        const now = Date.now();
+        const items = Object.values(this.settings.srsData);
+        const total = items.length;
+        const due = items.filter(item => item.nextReview <= now).length;
+        const learned = items.filter(item => item.reps > 0).length;
+        return { total, due, learned };
+    }
 }
 
 // --- RENDER CHILD POUR LES LAUNCHERS ---
@@ -420,7 +429,7 @@ abstract class BaseModal extends Modal {
 
     onOpen() {
         this.contentEl.empty();
-        this.contentEl.addClass("fc-modal-full");
+        this.modalEl.addClass("fc-modal-full");
 
         const header = this.contentEl.createDiv({ cls: "fc-header-container" });
 
@@ -899,6 +908,48 @@ class JsonFlashcardSettingTab extends PluginSettingTab {
                     this.plugin.settings.learningMode = value;
                     await this.plugin.saveSettings();
                     this.display();
+                })
+            );
+
+        containerEl.createEl("h3", { text: t("settings_stats_title", this.plugin.settings.language) });
+        const stats = this.plugin.getSRSStats();
+
+        const statsContainer = containerEl.createDiv({ cls: "fc-settings-stats" });
+        statsContainer.createEl("div", { text: `${t("settings_stats_total", this.plugin.settings.language)}${stats.total}` });
+        statsContainer.createEl("div", { text: `${t("settings_stats_due", this.plugin.settings.language)}${stats.due}` });
+        statsContainer.createEl("div", { text: `${t("settings_stats_learned", this.plugin.settings.language)}${stats.learned}` });
+
+        containerEl.createEl("hr");
+
+        new Setting(containerEl)
+            .setName(t("settings_reset_scores", this.plugin.settings.language))
+            .setDesc(t("settings_reset_scores_desc", this.plugin.settings.language))
+            .addButton(btn => btn
+                .setButtonText(t("settings_reset_button", this.plugin.settings.language))
+                .setWarning()
+                .onClick(async () => {
+                    if (confirm(t("settings_reset_confirm", this.plugin.settings.language))) {
+                        this.plugin.settings.lastScores = {};
+                        await this.plugin.saveSettings();
+                        new Notice("Scores reset!");
+                        this.display();
+                    }
+                })
+            );
+
+        new Setting(containerEl)
+            .setName(t("settings_reset_srs", this.plugin.settings.language))
+            .setDesc(t("settings_reset_srs_desc", this.plugin.settings.language))
+            .addButton(btn => btn
+                .setButtonText(t("settings_reset_button", this.plugin.settings.language))
+                .setWarning()
+                .onClick(async () => {
+                    if (confirm(t("settings_reset_confirm", this.plugin.settings.language))) {
+                        this.plugin.settings.srsData = {};
+                        await this.plugin.saveSettings();
+                        new Notice("SRS data reset!");
+                        this.display();
+                    }
                 })
             );
     }

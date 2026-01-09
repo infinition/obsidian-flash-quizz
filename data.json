@@ -16,7 +16,10 @@
     "infinition/articles/Lécoute_un_superpouvoir copy.md#nh7a2r": "0/1",
     "infinition/articles/Lécoute_un_superpouvoir copy.md#pxii0c": "1/1",
     "infinition/articles/Notes_d'étude__Le_temps_existe-t-il_vraiment.md#qv6rcg": "1/1",
-    "infinition/articles/Notes_d'étude__Le_temps_existe-t-il_vraiment.md#9973jr": "0/1"
+    "infinition/articles/Notes_d'étude__Le_temps_existe-t-il_vraiment.md#9973jr": "0/1",
+    "infinition/kb/Prince2/prince2_v7_foundation.md#tvwzqy": "0/2",
+    "infinition/kb/Electronics & Robotics/Le_Concept_du_0_V_en_Électronique_Masse_Référence_et_Sécurité.md#fc1t3e": "0/1",
+    "infinition/kb/Electronics & Robotics/Le_Concept_du_0_V_en_Électronique_Masse_Référence_et_Sécurité.md#8beuhq": "1/1"
   },
   "language": "fr",
   "learningMode": "srs",
@@ -37,6 +40,30 @@
       "nextReview": 1768044864852,
       "interval": 1,
       "ease": 2.36,
+      "reps": 1
+    },
+    "h4zfgz": {
+      "nextReview": 1768045092631,
+      "interval": 1,
+      "ease": 1.7000000000000002,
+      "reps": 0
+    },
+    "bxlukk": {
+      "nextReview": 1768045095581,
+      "interval": 1,
+      "ease": 1.7000000000000002,
+      "reps": 0
+    },
+    "qwu46b": {
+      "nextReview": 1768047094206,
+      "interval": 1,
+      "ease": 1.7000000000000002,
+      "reps": 0
+    },
+    "ydrua9": {
+      "nextReview": 1768047146346,
+      "interval": 1,
+      "ease": 2.5,
       "reps": 1
     }
   }
