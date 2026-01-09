@@ -34,6 +34,7 @@ A premium Obsidian plugin to create and launch interactive quizzes and flashcard
 - **Statistics**: View your overall study progress.
 - **Reset Options**: Independently reset score history or SRS data.
 
+
 ## ⌨️ Commands
 - **Open Flash&Quizz Library**: Open the central hub.
 - **Launch All Flashcards (Vault)**: Study all flashcards in your vault.
