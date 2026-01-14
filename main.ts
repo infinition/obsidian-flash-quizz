@@ -193,23 +193,33 @@ export default class JsonFlashcardPlugin extends Plugin {
         const results: { file: TFile, flashcards: number, quizzes: number }[] = [];
 
         for (const file of files) {
-            const content = await this.app.vault.read(file);
-            const fMatches = content.match(/```flashcard/g);
-            const qMatches = content.match(/```quizz/g);
+            try {
+                const content = await this.app.vault.read(file);
+                const fMatches = content.match(/```flashcard/g);
+                const qMatches = content.match(/```quizz/g);
 
-            if (fMatches || qMatches) {
-                results.push({
-                    file,
-                    flashcards: fMatches ? fMatches.length : 0,
-                    quizzes: qMatches ? qMatches.length : 0
-                });
+                if (fMatches || qMatches) {
+                    results.push({
+                        file,
+                        flashcards: fMatches ? fMatches.length : 0,
+                        quizzes: qMatches ? qMatches.length : 0
+                    });
+                }
+            } catch (e) {
+                console.warn(`[Flashcard Plugin] Failed to read file ${file.path}:`, e);
             }
         }
         return results;
     }
 
     async loadItemsFromFile(file: TFile, type: "flashcard" | "quizz"): Promise<any[]> {
-        const content = await this.app.vault.read(file);
+        let content = "";
+        try {
+            content = await this.app.vault.read(file);
+        } catch (e) {
+            console.error(`[Flashcard Plugin] Error reading file ${file.path}:`, e);
+            return [];
+        }
         const regex = type === "flashcard" ? /```flashcard\n([\s\S]*?)\n```/g : /```quizz\n([\s\S]*?)\n```/g;
         const items: any[] = [];
         let match;
@@ -221,7 +231,11 @@ export default class JsonFlashcardPlugin extends Plugin {
                 if (data.file) {
                     const jsonFile = this.app.vault.getAbstractFileByPath(data.file);
                     if (jsonFile instanceof TFile) {
-                        items.push(...JSON.parse(await this.app.vault.read(jsonFile)));
+                        try {
+                            items.push(...JSON.parse(await this.app.vault.read(jsonFile)));
+                        } catch (e) {
+                            console.error(`[Flashcard Plugin] Error reading JSON file ${data.file}:`, e);
+                        }
                     }
                 } else {
                     items.push(...(Array.isArray(data) ? data : (data.items || [])));
@@ -281,7 +295,12 @@ export default class JsonFlashcardPlugin extends Plugin {
             if (data.file) {
                 const file = this.app.vault.getAbstractFileByPath(data.file);
                 if (file instanceof TFile) {
-                    items = JSON.parse(await this.app.vault.read(file));
+                    try {
+                        items = JSON.parse(await this.app.vault.read(file));
+                    } catch (e) {
+                        console.error(`[Flashcard Plugin] Error reading JSON source ${data.file}:`, e);
+                        items = [];
+                    }
                 }
             } else {
                 items = Array.isArray(data) ? data : (data.items || []);
@@ -654,13 +673,13 @@ class LauncherChild extends MarkdownRenderChild {
         const section = this.ctx.getSectionInfo(this.containerEl);
         if (!section) return;
 
-        const content = await this.plugin.app.vault.read(file);
-        const lines = content.split("\n");
-
-        const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
-        const blockSource = blockLines.join("\n");
-
         try {
+            const content = await this.plugin.app.vault.read(file);
+            const lines = content.split("\n");
+
+            const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
+            const blockSource = blockLines.join("\n");
+
             let data = JSON.parse(blockSource);
             if (Array.isArray(data)) {
                 data = {
@@ -980,6 +999,8 @@ class FlashcardModal extends BaseModal {
 
         const card = this.cards[this.currentIndex];
         this.cardFront.setText(card.question);
+        // Hide answer initially to prevent seeing it during flip animation
+        this.cardBack.style.visibility = "hidden";
         this.cardBack.setText(card.answer);
     }
 
@@ -990,6 +1011,10 @@ class FlashcardModal extends BaseModal {
         if (this.isFlipped && !this.hasBeenFlipped) {
             this.hasBeenFlipped = true;
             this.scoreGroup.removeClass("is-hidden");
+            // Reveal answer after flip animation is halfway done (when card is perpendicular)
+            setTimeout(() => {
+                this.cardBack.style.visibility = "visible";
+            }, 300); // 300ms = halfway through 0.6s flip animation
         }
     }
 
