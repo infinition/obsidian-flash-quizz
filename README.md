@@ -39,3 +39,6 @@ A premium Obsidian plugin to create and launch interactive quizzes and flashcard
 - **Open Flash&Quizz Library**: Open the central hub.
 - **Launch All Flashcards (Vault)**: Study all flashcards in your vault.
 - **Launch All Quizzes (Vault)**: Study all quizzes in your vault.
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=infinition/obsidian-flash-quizz&type=date&legend=top-left)](https://www.star-history.com/#infinition/obsidian-flash-quizz&type=date&legend=top-left)
