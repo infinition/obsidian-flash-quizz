@@ -1,3 +1,6 @@
+<img width="500" height="500" alt="Gemini_Generated_Image_8l7xm28l7xm28l7x-removebg-preview" src="https://github.com/user-attachments/assets/9031c43a-f7ae-426a-9f0a-2380dcfa7164" />
+
+
 # Obsidian Flash & Quizz
 
 A premium Obsidian plugin to create and launch interactive quizzes and flashcards directly from your notes.
