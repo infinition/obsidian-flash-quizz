@@ -1,4 +1,4 @@
 Contact: https://github.com/infinition/obsidian-flash-quizz/issues
-Expires: 2027-02-06T09:36:59.000Z
+Expires: 2027-02-06T10:47:09.000Z
 Preferred-Languages: en, fr
 Policy: https://github.com/infinition/obsidian-flash-quizz/blob/wiki/SECURITY.md
