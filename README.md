@@ -1,47 +1,60 @@
-<img width="500" height="500" alt="Gemini_Generated_Image_8l7xm28l7xm28l7x-removebg-preview" src="https://github.com/user-attachments/assets/9031c43a-f7ae-426a-9f0a-2380dcfa7164" />
+<img width="500" height="500" alt="Flash and Quizz" src="https://github.com/user-attachments/assets/9031c43a-f7ae-426a-9f0a-2380dcfa7164" />
 
+# Flash & Quizz for Obsidian
 
-# Obsidian Flash & Quizz
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) [![Release](https://img.shields.io/github/v/release/infinition/obsidian-flash-quizz?style=flat)](https://github.com/infinition/obsidian-flash-quizz/releases) [![Obsidian Plugin](https://img.shields.io/badge/Obsidian-Plugin-7C3AED?style=flat&logo=obsidian&logoColor=white)](https://obsidian.md/plugins?id=flash-quizz) [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/infinition)
 
-A premium Obsidian plugin to create and launch interactive quizzes and flashcards directly from your notes.
+An Obsidian plugin to create and study interactive flashcards and quizzes directly from your notes, with spaced repetition.
 
-## 🚀 Features
+---
 
-### 📚 Library View & Auto-Detection
-- **Vault-wide Scanning**: Automatically detects all flashcards and quizzes across your entire vault.
-- **Central Hub**: Access all your study material from a single, beautiful "Library" view.
-- **Quick Launch**: Start studying any note's content with one click.
-- **Launch All**: Combine all your flashcards or quizzes for a massive study session.
+## Features
 
-### 🧠 Spaced Repetition System (SRS)
-- **SM-2 Algorithm**: Optimize your learning with an Anki-like spaced repetition system.
-- **Learning Modes**: Choose between **Random** for quick reviews or **SRS** for long-term retention.
-- **Smart Filtering**: In SRS mode, only items due for review are shown.
-- **Detailed Stats**: Track your progress with total, due, and learned item counts.
+- Vault-wide scanning: detects all flashcard and quiz blocks across your entire vault.
+- Central Library view to access all study material in one place.
+- SM-2 spaced repetition algorithm (Anki-compatible).
+- Two modes: Random (quick review) or SRS (due items only).
+- Progress stats: total, due, and learned item counts.
+- Full-width modals with staggered animations.
+- Banner images on launchers.
+- Multilingual: English, French, German, Spanish, Chinese, Japanese, Portuguese.
 
-### 🎨 Premium UI/UX
-- **Full-width Modals**: Immersive study experience with 90% screen width modals.
-- **Staggered Animations**: Smooth, dynamic entry animations for quiz options.
-- **Responsive Design**: Content adapts to any screen size, with full scrolling support.
-- **Banner Support**: Add custom images to your launchers with simple drag & drop.
+---
 
-## 🛠️ Technical Details
-- **Code Block Based**: Uses `flashcard` and `quizz` code blocks for easy integration.
-- **JSON Powered**: Content is stored in standard JSON format within code blocks or external files.
-- **Multi-language**: Supports English, French, German, Spanish, Chinese, Japanese, and Portuguese.
-- **SM-2 Algorithm**: Implements the classic SuperMemo-2 algorithm for SRS.
+## Syntax
 
-## ⚙️ Settings
-- **Language**: Choose your preferred interface language.
-- **Learning Mode**: Toggle between Random and Spaced Repetition.
-- **Statistics**: View your overall study progress.
-- **Reset Options**: Independently reset score history or SRS data.
+Flashcards and quizzes use `flashcard` and `quizz` code blocks inside your notes. Content is stored as JSON within the block or in an external file.
 
+---
 
-## ⌨️ Commands
-- **Open Flash&Quizz Library**: Open the central hub.
-- **Launch All Flashcards (Vault)**: Study all flashcards in your vault.
-- **Launch All Quizzes (Vault)**: Study all quizzes in your vault.
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| Open Flash & Quizz Library | Open the central study hub |
+| Launch All Flashcards (Vault) | Study all flashcards |
+| Launch All Quizzes (Vault) | Study all quizzes |
+
+---
+
+## Installation
+
+Search for **Flash&Quizz** in Obsidian's Community Plugins browser.
+
+---
+
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=infinition/obsidian-flash-quizz&type=date&legend=top-left)](https://www.star-history.com/#infinition/obsidian-flash-quizz&type=date&legend=top-left)
+<a href="https://www.star-history.com/?repos=infinition%2Fobsidian-flash-quizz&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=infinition/obsidian-flash-quizz&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=infinition/obsidian-flash-quizz&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=infinition/obsidian-flash-quizz&type=date&legend=top-left" />
+ </picture>
+</a>
+
+---
+
+## License
+
+MIT. See [LICENSE](LICENSE).
