@@ -1,4 +1,4 @@
-<img width="500" height="500" alt="Flash and Quizz" src="https://github.com/user-attachments/assets/9031c43a-f7ae-426a-9f0a-2380dcfa7164" />
+<img width="300" height="302" alt="Generated_Image_August_11__2026_-_4_25PM-removebg-preview" src="https://github.com/user-attachments/assets/d765ee28-44d5-4d78-bac5-09eadcae26ba" />
 
 # Flash & Quizz for Obsidian
 
