@@ -1,4 +1,6 @@
-<img width="300" height="302" alt="Generated_Image_August_11__2026_-_4_25PM-removebg-preview" src="https://github.com/user-attachments/assets/d765ee28-44d5-4d78-bac5-09eadcae26ba" />
+<p align="center">
+  <img src=".github/obsidian-flash-quizz.png" alt="obsidian-flash-quizz icon" width="300" height="302" />
+</p>
 
 # Flash & Quizz for Obsidian
 
