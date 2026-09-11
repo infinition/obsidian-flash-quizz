@@ -8,7 +8,7 @@
 
 An Obsidian plugin to create and study interactive flashcards and quizzes directly from your notes, with spaced repetition.
 
-<img width="934" height="1548" alt="image" src="https://github.com/user-attachments/assets/bb128ae1-1804-4e62-87db-07c28a89a7c6" />
+<img width="465" height="774" alt="image" src="https://github.com/user-attachments/assets/bb128ae1-1804-4e62-87db-07c28a89a7c6" />
 
 ---
 
